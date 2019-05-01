@@ -4,34 +4,45 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.TextView;
 
 public class MainActivity extends AppCompatActivity {
+
+    private final Fragment fragmentAccount = new AccountFragment();
+    private final Fragment fragmentRecipes = new RecipesFragment();
+    private final Fragment fragmentMyRecipes = new MyRecipesFragment();
+    private final Fragment fragmentFavourites = new FavouritesFragment();
+    private Fragment activeFragment = fragmentRecipes;
+    private final FragmentManager fragmentManager = getSupportFragmentManager();
+
     private BottomNavigationView.OnNavigationItemSelectedListener navSelectedItemListener
             = new BottomNavigationView.OnNavigationItemSelectedListener() {
 
         @Override
         public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-            Fragment selectedFragment = null;
-
             switch (item.getItemId())
             {
                 case R.id.navigation_account:
-                    selectedFragment = new AccountFragment();
+                    fragmentManager.beginTransaction().hide(activeFragment).show(fragmentAccount).commit();
+                    activeFragment = fragmentAccount;
                     break;
                 case R.id.navigation_recipes:
-                    selectedFragment = new RecipesFragment();
+                    fragmentManager.beginTransaction().hide(activeFragment).show(fragmentRecipes).commit();
+                    activeFragment = fragmentRecipes;
                     break;
                 case R.id.navigation_my_recipes:
-                    selectedFragment = new MyRecipesFragment();
+                    fragmentManager.beginTransaction().hide(activeFragment).show(fragmentMyRecipes).commit();
+                    activeFragment =  fragmentMyRecipes;
                     break;
                 case R.id.navigation_favourites:
-                    selectedFragment = new FavouritesFragment();
+                    fragmentManager.beginTransaction().hide(activeFragment).show(fragmentFavourites).commit();
+                    activeFragment = fragmentFavourites;
                     break;
             }
-
-            getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, selectedFragment).commit();
 
             return true;
         }
@@ -45,6 +56,15 @@ public class MainActivity extends AppCompatActivity {
         BottomNavigationView navigation = findViewById(R.id.navigation);
         navigation.setOnNavigationItemSelectedListener(navSelectedItemListener);
 
-        getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, new RecipesFragment()).commit();
+        fragmentManager.beginTransaction().add(R.id.fragment_container, fragmentAccount, "1").commit();
+        fragmentManager.beginTransaction().add(R.id.fragment_container, fragmentRecipes, "2").hide(fragmentRecipes).commit();
+        fragmentManager.beginTransaction().add(R.id.fragment_container, fragmentMyRecipes, "3").hide(fragmentMyRecipes).commit();
+        fragmentManager.beginTransaction().add(R.id.fragment_container, fragmentFavourites, "4").hide(fragmentFavourites).commit();
+    }
+
+    public void increment(View view)
+    {
+        TextView testTextView = findViewById(R.id.test_label);
+        testTextView.setText("clicked");
     }
 }

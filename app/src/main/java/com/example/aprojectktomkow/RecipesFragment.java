@@ -10,6 +10,8 @@ import android.view.ViewGroup;
 
 public class RecipesFragment extends Fragment
 {
+    private int counter = 0;
+
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState)
