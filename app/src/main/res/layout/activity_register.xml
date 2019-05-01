@@ -109,7 +109,8 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
                 android:text="@string/register_btn_action"
-                android:textStyle="bold" />
+                android:textStyle="bold"
+                android:onClick="testRun"/>
 
         </LinearLayout>
     </ScrollView>

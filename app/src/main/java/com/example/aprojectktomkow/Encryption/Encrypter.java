@@ -11,19 +11,19 @@ public class Encrypter implements IEncrypter
     @Override
     public String sha256(String text)
     {
-        MessageDigest md = null;
         try
         {
+            MessageDigest md = MessageDigest.getInstance( "SHA-256" );
+            // Change this to UTF-16 if needed
             md.update( text.getBytes( StandardCharsets.UTF_8 ) );
             byte[] digest = md.digest();
             String hex = String.format( "%064x", new BigInteger( 1, digest ) );
-
             return hex;
         }
-        catch (Exception ex)
+        catch(Exception ex)
         {
-            ex.printStackTrace();
-            return null;
+            return ex.getMessage();
         }
+
     }
 }
