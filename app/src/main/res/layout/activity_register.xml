@@ -38,7 +38,8 @@
                 android:layout_height="match_parent"
                 android:visibility="visible"
                 android:text="potential error"
-                android:textSize="20dp"
+                android:textSize="15dp"
+                android:textColor="@color/colorError"
                 android:layout_gravity="center_horizontal"/>
 
             <android.support.design.widget.TextInputLayout
@@ -110,7 +111,7 @@
                 android:layout_marginTop="16dp"
                 android:text="@string/register_btn_action"
                 android:textStyle="bold"
-                android:onClick="testRun"/>
+                android:onClick="register"/>
 
         </LinearLayout>
     </ScrollView>

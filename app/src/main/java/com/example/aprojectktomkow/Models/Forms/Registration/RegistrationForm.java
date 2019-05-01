@@ -1,40 +1,65 @@
 package com.example.aprojectktomkow.Models.Forms.Registration;
 
 import com.example.aprojectktomkow.Models.Forms.IValidatorResult;
-import com.example.aprojectktomkow.Models.Forms.Registration.RegisterValidationResult;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class RegistrationForm
 {
-    String username;
-    String email;
-    String password;
-    String repeatedPassword;
+    private final int MIN_USERNAME_LENGTH = 4;
+    private final int MIN_PASSWORD_LENGTH = 6;
 
-    public RegistrationForm() {}
+    private String username;
+    private String email;
+    private String password;
+    private String repeatedPassword;
 
     public IValidatorResult Validate()
     {
-        return RegisterValidationResult.createInvalidResult("error");
+        List<IValidatorResult> validationResults = new ArrayList<>();
+        validationResults.add(validateUsername());
+        validationResults.add(validateEmail());
+        validationResults.add(validatePassword());
+        validationResults.add(validatePasswordPair());
+
+        return RegisterValidationResult.createResult(validationResults);
     }
 
-    private boolean validateUsername()
+    private IValidatorResult validateUsername()
     {
-        return false;
+        if(username.trim().length() >= MIN_USERNAME_LENGTH)
+        {
+            return RegisterValidationResult.createValidResult();
+        }
+        return RegisterValidationResult.createInvalidResult("Username should contain at least " + MIN_PASSWORD_LENGTH + " characters\n");
     }
 
-    private boolean validateEmail()
+    private IValidatorResult validateEmail()
     {
-        return false;
+        if(android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches())
+        {
+            return RegisterValidationResult.createValidResult();
+        }
+        return RegisterValidationResult.createInvalidResult("Incorrect email address\n");
     }
 
-    private boolean validatePassword()
+    private IValidatorResult validatePassword()
     {
-        return false;
+        if(password.length() >= MIN_PASSWORD_LENGTH)
+        {
+            return RegisterValidationResult.createValidResult();
+        }
+        return RegisterValidationResult.createInvalidResult("Password should contain at least " + MIN_USERNAME_LENGTH + " characters\n");
     }
 
-    private boolean validatePasswordPair()
+    private IValidatorResult validatePasswordPair()
     {
-        return false;
+        if(password.equals(repeatedPassword))
+        {
+            return RegisterValidationResult.createValidResult();
+        }
+        return RegisterValidationResult.createInvalidResult("Passwords are not the same\n");
     }
 
     public String getUsername()
@@ -44,7 +69,7 @@ public class RegistrationForm
 
     public void setUsername(String username)
     {
-        this.username = username;
+        this.username = username.toLowerCase().trim();
     }
 
     public String getEmail()
@@ -54,7 +79,7 @@ public class RegistrationForm
 
     public void setEmail(String email)
     {
-        this.email = email;
+        this.email = email.toLowerCase().trim();
     }
 
     public String getPassword()
@@ -64,7 +89,7 @@ public class RegistrationForm
 
     public void setPassword(String password)
     {
-        this.password = password;
+        this.password = password.trim();
     }
 
     public String getRepeatedPassword()
@@ -74,6 +99,6 @@ public class RegistrationForm
 
     public void setRepeatedPassword(String repeatedPassword)
     {
-        this.repeatedPassword = repeatedPassword;
+        this.repeatedPassword = repeatedPassword.trim();
     }
 }

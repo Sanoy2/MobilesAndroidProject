@@ -2,6 +2,8 @@ package com.example.aprojectktomkow.Models.Forms.Registration;
 
 import com.example.aprojectktomkow.Models.Forms.IValidatorResult;
 
+import java.util.List;
+
 public class RegisterValidationResult implements IValidatorResult
 {
     private boolean isValid;
@@ -21,6 +23,26 @@ public class RegisterValidationResult implements IValidatorResult
         result.isValid = false;
         result.errorMessage = errorMessage;
         return result;
+    }
+
+    public static IValidatorResult createResult(List<IValidatorResult> resultList)
+    {
+        StringBuilder errorMessageBuilder = new StringBuilder();
+        boolean isValid = true;
+        for (IValidatorResult result: resultList)
+        {
+            if(!result.isValid())
+            {
+                errorMessageBuilder.append(result.errorMessage());
+                isValid = false;
+            }
+        }
+
+        if(isValid)
+        {
+            return RegisterValidationResult.createValidResult();
+        }
+        return RegisterValidationResult.createInvalidResult(errorMessageBuilder.toString());
     }
 
     @Override
