@@ -13,4 +13,9 @@ public class ApiUrl
     {
         return apiUrl + "users";
     }
+
+    public static String getUserRegisterUrl()
+    {
+        return apiUrl + "users/register";
+    }
 }

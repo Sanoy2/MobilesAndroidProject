@@ -17,6 +17,7 @@ import com.example.aprojectktomkow.Models.Forms.Login.LoginForm;
 public class LoginActivity extends AppCompatActivity
 {
     private final int REGISTRATION = 1;
+    private final int REQUEST_SEND_DELAY = 750;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -48,7 +49,7 @@ public class LoginActivity extends AppCompatActivity
             {
                 login();
             }
-        }, 500);
+        }, REQUEST_SEND_DELAY);
     }
 
     private void login()
