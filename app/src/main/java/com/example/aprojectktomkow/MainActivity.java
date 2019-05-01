@@ -1,5 +1,6 @@
 package com.example.aprojectktomkow;
 
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
@@ -9,6 +10,15 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
+
+import com.example.aprojectktomkow.Providers.ApiUrl;
+import com.loopj.android.http.JsonHttpResponseHandler;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import cz.msebera.android.httpclient.Header;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -66,5 +76,26 @@ public class MainActivity extends AppCompatActivity {
     {
         TextView testTextView = findViewById(R.id.test_label);
         testTextView.setText("clicked");
+
+        String url = ApiUrl.getUsersUrl();
+        HttpUtils.get(url, null, new JsonHttpResponseHandler()
+        {
+            @Override
+            public void onSuccess(int statusCode, Header[] headers, JSONArray timeline)
+            {
+                JSONObject firstEvent = null;
+                try
+                {
+                    firstEvent = (JSONObject)timeline.get(0);
+                    TextView testTextView = findViewById(R.id.test_label);
+                    testTextView.setText(firstEvent.toString());
+                } catch (Exception ex)
+                {
+                    ex.printStackTrace();
+                    TextView testTextView = findViewById(R.id.test_label);
+                    testTextView.setText("Connection error");
+                }
+            }
+        });
     }
 }
