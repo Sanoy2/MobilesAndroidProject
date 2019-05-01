@@ -1,17 +1,15 @@
-package com.example.aprojectktomkow.Models.Forms.Registration;
-
-import com.example.aprojectktomkow.Models.Forms.IValidatorResult;
+package com.example.aprojectktomkow.Models.Forms;
 
 import java.util.List;
 
-public class RegisterValidationResult implements IValidatorResult
+public class ValidationResult implements IValidatorResult
 {
     private boolean isValid;
     private String errorMessage;
 
     public static IValidatorResult createValidResult()
     {
-        RegisterValidationResult result = new RegisterValidationResult();
+        ValidationResult result = new ValidationResult();
         result.isValid = true;
         result.errorMessage = null;
         return result;
@@ -19,7 +17,7 @@ public class RegisterValidationResult implements IValidatorResult
 
     public static IValidatorResult createInvalidResult(String errorMessage)
     {
-        RegisterValidationResult result = new RegisterValidationResult();
+        ValidationResult result = new ValidationResult();
         result.isValid = false;
         result.errorMessage = errorMessage;
         return result;
@@ -40,9 +38,9 @@ public class RegisterValidationResult implements IValidatorResult
 
         if(isValid)
         {
-            return RegisterValidationResult.createValidResult();
+            return ValidationResult.createValidResult();
         }
-        return RegisterValidationResult.createInvalidResult(errorMessageBuilder.toString());
+        return ValidationResult.createInvalidResult(errorMessageBuilder.toString());
     }
 
     @Override

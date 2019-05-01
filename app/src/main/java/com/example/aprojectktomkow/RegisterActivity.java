@@ -2,6 +2,7 @@ package com.example.aprojectktomkow;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
@@ -25,19 +26,20 @@ public class RegisterActivity extends AppCompatActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_register);
 
-        encrypter = new Encrypter();
         hideError();
     }
 
     public void register(View view)
     {
-        RegistrationForm form = new RegistrationForm();
-        form.setUsername(getUsername());
-        form.setEmail(getEmail());
-        form.setPassword(getPassword());
-        form.setRepeatedPassword(getRepeatedPassword());
+        hideError();
 
-        IValidatorResult formValidationResult = form.Validate();
+        RegistrationForm registerForm = new RegistrationForm();
+        registerForm.setUsername(getUsername());
+        registerForm.setEmail(getEmail());
+        registerForm.setPassword(getPassword());
+        registerForm.setRepeatedPassword(getRepeatedPassword());
+
+        IValidatorResult formValidationResult = registerForm.Validate();
         if(!formValidationResult.isValid())
         {
             showError(formValidationResult.errorMessage());
@@ -97,12 +99,14 @@ public class RegisterActivity extends AppCompatActivity
         imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
     }
 
-    public void testRun(View view)
+    @Override
+    public void finish()
     {
+        Intent intent = new Intent();
 
-        EditText editText = findViewById(R.id.password);
-        String text = editText.getText().toString();
-        String hash = encrypter.sha256(text);
-        Toast.makeText(getApplicationContext(), hash, Toast.LENGTH_LONG).show();
+        intent.putExtra("result", "some result body");
+
+        setResult(RESULT_OK, intent);
+        super.finish();
     }
 }
