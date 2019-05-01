@@ -1,6 +1,6 @@
 package com.example.aprojectktomkow;
 
-import android.os.AsyncTask;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
@@ -97,5 +97,17 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
         });
+    }
+
+    public void goToRegister(View view)
+    {
+        Intent intent = new Intent(this, RegisterActivity.class);
+        startActivity(intent);
+    }
+
+    public void goToLogin(View view)
+    {
+        Intent intent = new Intent(this, LoginActivity.class);
+        startActivity(intent);
     }
 }

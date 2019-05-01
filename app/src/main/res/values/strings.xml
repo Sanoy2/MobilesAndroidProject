@@ -10,6 +10,10 @@
     <string name="title_my_recipes">My recipes</string>
     <string name="title_favourites">Favourites</string>
 
+    <!--Account fragment-->
+    <string name="go_to_login">Login</string>
+    <string name="go_to_register">Register</string>
+
     <!--Register-->
     <string name="register_username">Username</string>
     <string name="register_email">Email</string>
