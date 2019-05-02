@@ -201,7 +201,7 @@ public class RegisterActivity extends AppCompatActivity
     private void setInitialValues()
     {
         EditText editText = findViewById(R.id.username);
-        editText.setText("JohnSnow");
+        editText.setText("doe");
         editText = findViewById(R.id.email);
         editText.setText("myvalidemail@email.com");
         editText = findViewById(R.id.password);

@@ -27,6 +27,7 @@ public class LoginActivity extends AppCompatActivity
 
         hideError();
         hideProgressCircle();
+        setInitialValues();
     }
 
     public void goToRegister(View view)
@@ -133,5 +134,14 @@ public class LoginActivity extends AppCompatActivity
 
         setResult(RESULT_OK, intent);
         super.finish();
+    }
+
+    // temporary method
+    private void setInitialValues()
+    {
+        EditText editText = findViewById(R.id.email);
+        editText.setText("example@email.com");
+        editText = findViewById(R.id.password);
+        editText.setText("superpassword");
     }
 }
