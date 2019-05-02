@@ -10,9 +10,22 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.aprojectktomkow.Models.Forms.IValidatorResult;
+import com.example.aprojectktomkow.Models.Forms.Login.LoginCommand;
 import com.example.aprojectktomkow.Models.Forms.Login.LoginForm;
+import com.example.aprojectktomkow.Models.Forms.Registration.RegistrationCommand;
+import com.example.aprojectktomkow.Providers.ApiUrl;
+import com.loopj.android.http.AsyncHttpClient;
+import com.loopj.android.http.TextHttpResponseHandler;
+
+import org.json.JSONObject;
+
+import java.io.UnsupportedEncodingException;
+
+import cz.msebera.android.httpclient.Header;
+import cz.msebera.android.httpclient.entity.StringEntity;
 
 public class LoginActivity extends AppCompatActivity
 {
@@ -60,12 +73,49 @@ public class LoginActivity extends AppCompatActivity
         loginForm.setPassword(getPassword());
 
         IValidatorResult formValidationResult = loginForm.Validate();
-        if (!formValidationResult.isValid())
+        if (formValidationResult.isValid())
+        {
+            LoginCommand loginCommand = new LoginCommand(loginForm);
+            sendCommand(loginCommand);
+        }
+        else
         {
             showError(formValidationResult.errorMessage());
+            hideProgressCircle();
         }
+    }
 
-        hideProgressCircle();
+
+    private void sendCommand(LoginCommand command)
+    {
+        String url = ApiUrl.getUserLoginUlr();
+
+        JSONObject jsonParams = new JSONObject(command.toHashMap());
+        StringEntity entity = null;
+        try
+        {
+            entity = new StringEntity(jsonParams.toString());
+        } catch (UnsupportedEncodingException e)
+        {
+            e.printStackTrace();
+        }
+        AsyncHttpClient client = new AsyncHttpClient();
+        client.post(getApplicationContext(), url, entity, "application/json", new TextHttpResponseHandler()
+        {
+            @Override
+            public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable)
+            {
+                Toast.makeText(getApplicationContext(), responseString, Toast.LENGTH_SHORT).show();
+                hideProgressCircle();
+            }
+
+            @Override
+            public void onSuccess(int statusCode, Header[] headers, String responseString)
+            {
+                Toast.makeText(getApplicationContext(), responseString, Toast.LENGTH_SHORT).show();
+                hideProgressCircle();
+            }
+        });
     }
 
     private String getEmail()
@@ -140,8 +190,8 @@ public class LoginActivity extends AppCompatActivity
     private void setInitialValues()
     {
         EditText editText = findViewById(R.id.email);
-        editText.setText("example@email.com");
+        editText.setText("jd@em.com");
         editText = findViewById(R.id.password);
-        editText.setText("superpassword");
+        editText.setText("password");
     }
 }

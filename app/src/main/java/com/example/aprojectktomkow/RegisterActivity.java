@@ -88,7 +88,6 @@ public class RegisterActivity extends AppCompatActivity
 
     private void sendCommand(RegistrationCommand command)
     {
-        String toShow = "";
         String url = ApiUrl.getUserRegisterUrl();
 
         JSONObject jsonParams = new JSONObject(command.toHashMap());
@@ -201,12 +200,12 @@ public class RegisterActivity extends AppCompatActivity
     private void setInitialValues()
     {
         EditText editText = findViewById(R.id.username);
-        editText.setText("doe");
+        editText.setText("johndoe");
         editText = findViewById(R.id.email);
-        editText.setText("myvalidemail@email.com");
+        editText.setText("jd@em.com");
         editText = findViewById(R.id.password);
-        editText.setText("zaq12wsx");
+        editText.setText("password");
         editText = findViewById(R.id.password_repeat);
-        editText.setText("zaq12wsx");
+        editText.setText("password");
     }
 }
