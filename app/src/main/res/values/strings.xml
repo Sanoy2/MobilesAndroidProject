@@ -35,7 +35,7 @@
     <string name="create_recipe_short_description">Short description</string>
     <string name="create_recipe_description">Recipe full description:</string>
     <string name="create_private_recipe">Private recipe</string>
-    <string name="create_recipe_image">Attach image</string>
+    <string name="create_recipe_image">Take picture</string>
     <string name="create_recipe_button">Create</string>
 
     <!-- TODO: Remove or change this placeholder text -->
