@@ -1,9 +1,11 @@
 package com.example.aprojectktomkow;
 
 import android.Manifest;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.res.Configuration;
+import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Environment;
@@ -25,14 +27,15 @@ import net.yslibrary.android.keyboardvisibilityevent.KeyboardVisibilityEventList
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
 public class CreateRecipeActivity extends AppCompatActivity
 {
-    static final int REQUEST_IMAGE_CAPTURE = 1;
+    static final int REQUEST_IMAGE_GET = 1;
 
-    private static final int USE_CAMERA_RESP = 2;
+    private static final int READ_EXTERNAL_STORAGE_RESP = 2;
 
     String currentPhotoPath;
 
@@ -71,7 +74,7 @@ public class CreateRecipeActivity extends AppCompatActivity
     {
         switch (requestCode)
         {
-            case USE_CAMERA_RESP:
+            case READ_EXTERNAL_STORAGE_RESP:
                 if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED)
                 {
                     dispatchTakePictureIntent();
@@ -82,71 +85,61 @@ public class CreateRecipeActivity extends AppCompatActivity
 
     public void takePicture(View view)
     {
-        if (checkIfPermissionGranted(Manifest.permission.CAMERA))
+        if (checkIfPermissionGranted(Manifest.permission.READ_EXTERNAL_STORAGE))
         {
             dispatchTakePictureIntent();
         } else
         {
-            askForPermission(Manifest.permission.CAMERA, USE_CAMERA_RESP);
+            askForPermission(Manifest.permission.READ_EXTERNAL_STORAGE, READ_EXTERNAL_STORAGE_RESP);
         }
 
+    }
+
+    public void dispatchTakePictureIntent()
+    {
+        Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
+        intent.addCategory(Intent.CATEGORY_OPENABLE);
+        intent.setType("image/*");
+        startActivityForResult(Intent.createChooser(intent, "Select Picture"), REQUEST_IMAGE_GET);
+    }
+
+    public String getPathFromURI(Uri contentUri) {
+        String res = null;
+        String[] proj = {MediaStore.Images.Media.DATA};
+        Cursor cursor = getContentResolver().query(contentUri, proj, null, null, null);
+        if (cursor.moveToFirst()) {
+            int column_index = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
+            res = cursor.getString(column_index);
+        }
+        cursor.close();
+        return res;
     }
 
     @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data)
-    {
-        if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == RESULT_OK)
-        {
-            Bundle extras = data.getExtras();
-            Bitmap imageBitmap = (Bitmap) extras.get("data");
-            ImageView image = findViewById(R.id.picture);
-            image.setImageBitmap(imageBitmap);
-        } else
-        {
-            showToast("Something fucked up");
-            Log.i("camera", "request code: " + requestCode);
-            Log.i("camera", "result code: " + resultCode);
-            Log.i("camera", "result code 'ok' is: " + RESULT_OK);
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        try {
+            if (resultCode == RESULT_OK) {
+                if (requestCode == REQUEST_IMAGE_GET) {
+                    Uri selectedImageUri = data.getData();
+                    // Get the path from the Uri
+                    final String path = getPathFromURI(selectedImageUri);
+                    if (path != null) {
+                        File f = new File(path);
+                        selectedImageUri = Uri.fromFile(f);
+                    }
+                    // Set the image in ImageView
+//                    ImageView((ImageView) findViewById(R.id.imgView)).setImageURI(selectedImageUri);
+                    ImageView iv = findViewById(R.id.picture);
+                    iv.setImageURI(selectedImageUri);
+                }
+            }
+        } catch (Exception e) {
+            Log.e("FileSelectorActivity", "File select error", e);
         }
     }
 
-    private void dispatchTakePictureIntent() {
-        Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-        // Ensure that there's a camera activity to handle the intent
-        if (takePictureIntent.resolveActivity(getPackageManager()) != null) {
-            // Create the File where the photo should go
-            File photoFile = null;
-            try {
-                photoFile = createImageFile();
-            } catch (IOException ex) {
-                showToast("IO Exception");
-            }
-            // Continue only if the File was successfully created
-            if (photoFile != null) {
-                Uri photoURI = FileProvider.getUriForFile(this,
-                        "com.example.android.fileprovider",
-                        photoFile);
-                takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI);
-                startActivityForResult(takePictureIntent, REQUEST_IMAGE_CAPTURE);
-            }
-        }
-    }
 
-    private File createImageFile() throws IOException {
-        // Create an image file name
-        String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
-        String imageFileName = "JPEG_" + timeStamp + "_";
-        File storageDir = getExternalFilesDir(Environment.DIRECTORY_PICTURES);
-        File image = File.createTempFile(
-                imageFileName,  /* prefix */
-                ".jpg",         /* suffix */
-                storageDir      /* directory */
-        );
-
-        // Save a file: path for use with ACTION_VIEW intents
-        currentPhotoPath = image.getAbsolutePath();
-        return image;
-    }
 
     private boolean checkIfPermissionGranted(String permission)
     {
