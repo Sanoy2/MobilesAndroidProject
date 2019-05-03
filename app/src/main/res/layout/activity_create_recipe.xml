@@ -39,10 +39,32 @@
                 android:singleLine="true" />
 
             <EditText
+                android:id="@+id/recipe_time"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="@string/create_recipe_needed_time"
+                android:inputType="number" />
+
+            <EditText
+                android:id="@+id/recipe_short_description"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="@string/create_recipe_short_description"
+                android:inputType="textMultiLine"
+                android:maxLines="2"
+                android:singleLine="false" />
+
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/create_recipe_description"
+                android:textSize="25dp" />
+
+            <EditText
                 android:id="@+id/recipe_description"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="@string/create_recipe_description"
                 android:inputType="textMultiLine" />
 
             <CheckBox
@@ -50,6 +72,32 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/create_private_recipe" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <Button
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:drawableLeft="@drawable/ic_add_a_photo_black_24dp"
+                    android:text="@string/create_recipe_image" />
+
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent">
+
+                    <ImageView
+                        android:layout_width="200dp"
+                        android:layout_height="150dp"
+                        android:layout_centerInParent="true"
+                        android:layout_gravity="center_horizontal|center_vertical"
+                        android:maxWidth="100dp"
+                        android:maxHeight="100dp"
+                        android:src="@drawable/ic_image_black_24dp"/>
+                </RelativeLayout>
+            </LinearLayout>
 
         </LinearLayout>
     </ScrollView>
@@ -61,7 +109,7 @@
         android:layout_alignParentBottom="true"
         android:layout_centerInParent="true"
         android:orientation="vertical"
-        android:visibility="gone">
+        android:visibility="visible">
 
         <ProgressBar
             android:id="@+id/progress_circle"
