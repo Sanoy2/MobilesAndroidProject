@@ -13,14 +13,14 @@
         android:textSize="30dp"/>
 
     <Button
-        android:id="@+id/got_to_login_button"
+        android:id="@+id/go_to_login_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/go_to_login"
         android:onClick="goToLogin"/>
 
     <Button
-        android:id="@+id/got_to_register_button"
+        android:id="@+id/go_to_register_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/go_to_register"

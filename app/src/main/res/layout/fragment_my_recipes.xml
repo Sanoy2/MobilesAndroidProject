@@ -4,11 +4,12 @@
     android:layout_height="match_parent"
     android:background="@android:color/holo_orange_light">
 
-    <TextView
+    <Button
+        android:id="@+id/create_recipe"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="MyRecipes fragment"
-        android:textSize="30dp"
-        android:layout_centerInParent="true"/>
+        android:text="@string/go_to_register"
+        android:layout_centerInParent="true"
+        android:onClick="createRecipe"/>
 
 </RelativeLayout>

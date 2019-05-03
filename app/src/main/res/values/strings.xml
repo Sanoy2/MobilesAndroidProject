@@ -28,7 +28,18 @@
     <string name="login_not_have_account">You don\'t have an account?</string>
     <string name="login_go_to_register">Create account</string>
 
+    <!--Create recipe-->
+    <string name="create_recipe_activity_title">Create recipe</string>
+    <string name="create_recipe_title">Recipe title</string>
+    <string name="create_recipe_short_description">Short description</string>
+    <string name="create_recipe_description">Recipe description</string>
+    <string name="create_recipe_needed_time">Needed time (minutes)</string>
+    <string name="create_recipe_image">Attach image</string>
+    <string name="create_private_recipe">Private recipe</string>
+    <string name="create_recipe_button">Create</string>
+
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="title_activity_create_recipie">CreateRecipieActivity</string>
 
 </resources>

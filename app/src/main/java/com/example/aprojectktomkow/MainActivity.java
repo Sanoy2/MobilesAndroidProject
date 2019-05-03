@@ -63,6 +63,11 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        // temporary
+        Intent intent = new Intent(this, CreateRecipeActivity.class);
+        startActivity(intent);
+        // ^^^^^^^^^^^^^^^^^^
+
         BottomNavigationView navigation = findViewById(R.id.navigation);
         navigation.setOnNavigationItemSelectedListener(navSelectedItemListener);
 
@@ -108,6 +113,12 @@ public class MainActivity extends AppCompatActivity {
     public void goToLogin(View view)
     {
         Intent intent = new Intent(this, LoginActivity.class);
+        startActivity(intent);
+    }
+
+    public void createRecipe(View view)
+    {
+        Intent intent = new Intent(this, CreateRecipeActivity.class);
         startActivity(intent);
     }
 }
