@@ -15,7 +15,6 @@ import android.widget.Toast;
 import com.example.aprojectktomkow.Models.Forms.IValidatorResult;
 import com.example.aprojectktomkow.Models.Forms.Login.LoginCommand;
 import com.example.aprojectktomkow.Models.Forms.Login.LoginForm;
-import com.example.aprojectktomkow.Models.Forms.Registration.RegistrationCommand;
 import com.example.aprojectktomkow.Providers.ApiUrl;
 import com.loopj.android.http.AsyncHttpClient;
 import com.loopj.android.http.TextHttpResponseHandler;
@@ -99,8 +98,7 @@ public class LoginActivity extends AppCompatActivity
         {
             e.printStackTrace();
         }
-        AsyncHttpClient client = new AsyncHttpClient();
-        client.post(getApplicationContext(), url, entity, "application/json", new TextHttpResponseHandler()
+        HttpUtils.post(getApplicationContext(), url, entity, "application/json", new TextHttpResponseHandler()
         {
             @Override
             public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable)
@@ -149,9 +147,7 @@ public class LoginActivity extends AppCompatActivity
     private static void hideKeyboard(Activity activity)
     {
         InputMethodManager imm = (InputMethodManager) activity.getSystemService(Activity.INPUT_METHOD_SERVICE);
-        //Find the currently focused view, so we can grab the correct window token from it.
         View view = activity.getCurrentFocus();
-        //If no view currently has focus, create a new one, just so we can grab a window token from it
         if (view == null)
         {
             view = new View(activity);
