@@ -12,7 +12,9 @@ import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.aprojectktomkow.Models.Recipe;
 import com.example.aprojectktomkow.Providers.ApiUrl;
+import com.google.gson.Gson;
 import com.loopj.android.http.JsonHttpResponseHandler;
 
 import org.json.JSONArray;
@@ -20,17 +22,21 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.w3c.dom.Text;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import cz.msebera.android.httpclient.Header;
 
 public class MainActivity extends AppCompatActivity
 {
-
     private final Fragment fragmentAccount = new AccountFragment();
     private final Fragment fragmentRecipes = new RecipesFragment();
     private final Fragment fragmentMyRecipes = new MyRecipesFragment();
     private final Fragment fragmentFavourites = new FavouritesFragment();
     private Fragment activeFragment = fragmentRecipes;
     private final FragmentManager fragmentManager = getSupportFragmentManager();
+
+    private List<Recipe> recipes;
 
     private BottomNavigationView.OnNavigationItemSelectedListener navSelectedItemListener
             = new BottomNavigationView.OnNavigationItemSelectedListener()
@@ -73,6 +79,8 @@ public class MainActivity extends AppCompatActivity
 //        Intent intent = new Intent(this, CreateRecipeActivity.class);
 //        startActivity(intent);
 //        // ^^^^^^^^^^^^^^^^^^
+
+        recipes = new ArrayList<>();
 
         BottomNavigationView navigation = findViewById(R.id.navigation);
         navigation.setOnNavigationItemSelectedListener(navSelectedItemListener);
@@ -148,26 +156,32 @@ public class MainActivity extends AppCompatActivity
             @Override
             public void onSuccess(int statusCode, Header[] headers, JSONArray timeline)
             {
-
+                recipes.clear();
                 try
                 {
                     int objectsNumber = timeline.length();
                     StringBuilder builder = new StringBuilder();
                     JSONObject json;
                     String text;
+                    Recipe recipe;
+                    Gson gson = new Gson();
                     for (int i = 0; i < objectsNumber; i++)
                     {
                         json = (JSONObject) timeline.get(i);
-                        text = json.getString("name") + "\n";
-                        builder.append(text);
+                        recipe = gson.fromJson(json.toString(), Recipe.class);
+                        recipes.add(recipe);
+
+                        text = recipe.getName() + " " + recipe.getDescription();
+                        builder.append(text).append("\n");
                     }
 
+                    recipe = null;
                     TextView textView = findViewById(R.id.test_label);
                     textView.setText(builder.toString());
                 }
                 catch (Exception e)
                 {
-                    Toast.makeText(getApplicationContext(), e.getMessage(), Toast.LENGTH_LONG).show();
+                    Toast.makeText(getApplicationContext(), "Exception: " + e.getMessage(), Toast.LENGTH_LONG).show();
                 }
             }
         });
