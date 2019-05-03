@@ -45,15 +45,14 @@ public class RegisterActivity extends AppCompatActivity
         setContentView(R.layout.activity_register);
 
         hideError();
-        hideProgressCircle();
+        deactivateLoadingScreen();
         setInitialValues();
     }
 
     public void register(View view)
     {
-        hideError();
         hideKeyboard(this);
-        showProgressCircle();
+        activateLoadingScreen();
 
         Handler handler = new Handler();
         handler.postDelayed(new Runnable()
@@ -81,7 +80,7 @@ public class RegisterActivity extends AppCompatActivity
             sendCommand(registerCommand);
         } else
         {
-            hideProgressCircle();
+            deactivateLoadingScreen();
             showError(formValidationResult.errorMessage());
         }
     }
@@ -105,15 +104,15 @@ public class RegisterActivity extends AppCompatActivity
             @Override
             public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable)
             {
-                Toast.makeText(getApplicationContext(), "fail", Toast.LENGTH_SHORT).show();
-                hideProgressCircle();
+                Toast.makeText(getApplicationContext(), responseString, Toast.LENGTH_SHORT).show();
+                deactivateLoadingScreen();
             }
 
             @Override
             public void onSuccess(int statusCode, Header[] headers, String responseString)
             {
-                Toast.makeText(getApplicationContext(), "success", Toast.LENGTH_SHORT).show();
-                hideProgressCircle();
+                Toast.makeText(getApplicationContext(), responseString, Toast.LENGTH_SHORT).show();
+                deactivateLoadingScreen();
             }
         });
     }
@@ -167,6 +166,29 @@ public class RegisterActivity extends AppCompatActivity
             view = new View(activity);
         }
         imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+    }
+
+    private void activateLoadingScreen()
+    {
+        hideError();
+        deactivateButtons();
+        showProgressCircle();
+    }
+
+    private void deactivateLoadingScreen()
+    {
+        activateButtons();
+        hideProgressCircle();
+    }
+
+    private void activateButtons()
+    {
+        findViewById(R.id.sign_in_button).setEnabled(true);
+    }
+
+    private void deactivateButtons()
+    {
+        findViewById(R.id.sign_in_button).setEnabled(false);
     }
 
     private void hideProgressCircle()

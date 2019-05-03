@@ -85,7 +85,7 @@
                 android:text="@string/login_not_have_account"
                 android:paddingTop="50dp"/>
             <Button
-                android:id="@+id/email_sign_in_button"
+                android:id="@+id/login_register_button"
                 style="?android:textAppearanceSmall"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"

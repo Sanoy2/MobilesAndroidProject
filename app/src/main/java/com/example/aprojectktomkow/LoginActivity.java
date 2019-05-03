@@ -7,6 +7,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -38,7 +39,7 @@ public class LoginActivity extends AppCompatActivity
         setContentView(R.layout.activity_login);
 
         hideError();
-        hideProgressCircle();
+        deactivateLoadingScreen();
         setInitialValues();
     }
 
@@ -50,8 +51,7 @@ public class LoginActivity extends AppCompatActivity
 
     public void login(View view)
     {
-        showProgressCircle();
-        hideError();
+        activateLoadingScreen();
         hideKeyboard(this);
 
         Handler handler = new Handler();
@@ -80,7 +80,7 @@ public class LoginActivity extends AppCompatActivity
         else
         {
             showError(formValidationResult.errorMessage());
-            hideProgressCircle();
+            deactivateLoadingScreen();
         }
     }
 
@@ -104,14 +104,14 @@ public class LoginActivity extends AppCompatActivity
             public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable)
             {
                 Toast.makeText(getApplicationContext(), responseString, Toast.LENGTH_SHORT).show();
-                hideProgressCircle();
+                deactivateLoadingScreen();
             }
 
             @Override
             public void onSuccess(int statusCode, Header[] headers, String responseString)
             {
                 Toast.makeText(getApplicationContext(), responseString, Toast.LENGTH_SHORT).show();
-                hideProgressCircle();
+                deactivateLoadingScreen();
             }
         });
     }
@@ -155,6 +155,31 @@ public class LoginActivity extends AppCompatActivity
         imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
     }
 
+    private void activateLoadingScreen()
+    {
+        hideError();
+        deactivateButtons();
+        showProgressCircle();
+    }
+
+    private void deactivateLoadingScreen()
+    {
+        activateButtons();
+        hideProgressCircle();
+    }
+
+    private void activateButtons()
+    {
+        findViewById(R.id.login_sign_in_button).setEnabled(true);
+        findViewById(R.id.login_register_button).setEnabled(true);
+    }
+
+    private void deactivateButtons()
+    {
+        findViewById(R.id.login_sign_in_button).setEnabled(false);
+        findViewById(R.id.login_register_button).setEnabled(false);
+    }
+
     private void hideProgressCircle()
     {
         getProgessCircle().setVisibility(View.GONE);
@@ -164,6 +189,7 @@ public class LoginActivity extends AppCompatActivity
     {
         getProgessCircle().setVisibility(View.VISIBLE);
     }
+
 
     private ProgressBar getProgessCircle()
     {
