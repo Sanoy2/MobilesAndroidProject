@@ -11,18 +11,18 @@
         android:text="Recipes fragment"
         android:textSize="30dp"/>
 
-    <TextView
-        android:id="@+id/test_label"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text=""
-        android:textSize="30dp"/>
-
     <Button
         android:id="@+id/test_button"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="Click me"
-        android:onClick="increment"/>
+        android:onClick="getAllRecipes"/>
+
+    <TextView
+        android:id="@+id/test_label"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="json will be here"
+        android:textSize="20dp"/>
 
 </LinearLayout>

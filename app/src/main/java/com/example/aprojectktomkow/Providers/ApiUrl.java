@@ -19,5 +19,13 @@ public class ApiUrl
         return apiUrl + "users/register";
     }
 
-    public static String getUserLoginUlr() { return apiUrl + "users/login"; }
+    public static String getUserLoginUlr()
+    {
+        return apiUrl + "users/login";
+    }
+
+    public static String getRecipesUrl()
+    {
+        return apiUrl + "recipes";
+    }
 }

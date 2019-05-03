@@ -10,6 +10,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.aprojectktomkow.Providers.ApiUrl;
 import com.loopj.android.http.JsonHttpResponseHandler;
@@ -17,10 +18,12 @@ import com.loopj.android.http.JsonHttpResponseHandler;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.w3c.dom.Text;
 
 import cz.msebera.android.httpclient.Header;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity
+{
 
     private final Fragment fragmentAccount = new AccountFragment();
     private final Fragment fragmentRecipes = new RecipesFragment();
@@ -30,10 +33,12 @@ public class MainActivity extends AppCompatActivity {
     private final FragmentManager fragmentManager = getSupportFragmentManager();
 
     private BottomNavigationView.OnNavigationItemSelectedListener navSelectedItemListener
-            = new BottomNavigationView.OnNavigationItemSelectedListener() {
+            = new BottomNavigationView.OnNavigationItemSelectedListener()
+    {
 
         @Override
-        public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+        public boolean onNavigationItemSelected(@NonNull MenuItem item)
+        {
             switch (item.getItemId())
             {
                 case R.id.navigation_account:
@@ -46,7 +51,7 @@ public class MainActivity extends AppCompatActivity {
                     break;
                 case R.id.navigation_my_recipes:
                     fragmentManager.beginTransaction().hide(activeFragment).show(fragmentMyRecipes).commit();
-                    activeFragment =  fragmentMyRecipes;
+                    activeFragment = fragmentMyRecipes;
                     break;
                 case R.id.navigation_favourites:
                     fragmentManager.beginTransaction().hide(activeFragment).show(fragmentFavourites).commit();
@@ -59,14 +64,15 @@ public class MainActivity extends AppCompatActivity {
     };
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(Bundle savedInstanceState)
+    {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        // temporary
-        Intent intent = new Intent(this, CreateRecipeActivity.class);
-        startActivity(intent);
-        // ^^^^^^^^^^^^^^^^^^
+//        // temporary
+//        Intent intent = new Intent(this, CreateRecipeActivity.class);
+//        startActivity(intent);
+//        // ^^^^^^^^^^^^^^^^^^
 
         BottomNavigationView navigation = findViewById(R.id.navigation);
         navigation.setOnNavigationItemSelectedListener(navSelectedItemListener);
@@ -91,7 +97,7 @@ public class MainActivity extends AppCompatActivity {
                 JSONObject firstEvent = null;
                 try
                 {
-                    firstEvent = (JSONObject)timeline.get(0);
+                    firstEvent = (JSONObject) timeline.get(0);
                     TextView testTextView = findViewById(R.id.test_label);
                     testTextView.setText(firstEvent.toString());
                 } catch (Exception ex)
@@ -120,5 +126,50 @@ public class MainActivity extends AppCompatActivity {
     {
         Intent intent = new Intent(this, CreateRecipeActivity.class);
         startActivity(intent);
+    }
+
+    public void getAllRecipes(View view)
+    {
+        getAllRecipes();
+    }
+
+    private void getAllRecipes()
+    {
+        String url = ApiUrl.getRecipesUrl();
+        HttpUtils.get(url, null, new JsonHttpResponseHandler()
+        {
+            @Override
+            public void onSuccess(int statusCode, Header[] headers, JSONObject response)
+            {
+                TextView textView = findViewById(R.id.test_label);
+                textView.setText("Json object instead of array");
+            }
+
+            @Override
+            public void onSuccess(int statusCode, Header[] headers, JSONArray timeline)
+            {
+
+                try
+                {
+                    int objectsNumber = timeline.length();
+                    StringBuilder builder = new StringBuilder();
+                    JSONObject json;
+                    String text;
+                    for (int i = 0; i < objectsNumber; i++)
+                    {
+                        json = (JSONObject) timeline.get(i);
+                        text = json.getString("name") + "\n";
+                        builder.append(text);
+                    }
+
+                    TextView textView = findViewById(R.id.test_label);
+                    textView.setText(builder.toString());
+                }
+                catch (Exception e)
+                {
+                    Toast.makeText(getApplicationContext(), e.getMessage(), Toast.LENGTH_LONG).show();
+                }
+            }
+        });
     }
 }
