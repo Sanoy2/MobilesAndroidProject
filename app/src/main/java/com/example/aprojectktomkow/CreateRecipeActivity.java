@@ -20,6 +20,8 @@ import android.view.View;
 import android.view.ViewTreeObserver;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.ProgressBar;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import net.yslibrary.android.keyboardvisibilityevent.KeyboardVisibilityEvent;
@@ -48,6 +50,9 @@ public class CreateRecipeActivity extends AppCompatActivity
         setContentView(R.layout.activity_create_recipe);
 
         bottomLayout = findViewById(R.id.bottom_layout);
+
+        deactivateLoadingScreen();
+        hideError();
 
         KeyboardVisibilityEvent.setEventListener(
                 CreateRecipeActivity.this,
@@ -159,6 +164,63 @@ public class CreateRecipeActivity extends AppCompatActivity
     private void hideBottomLayout()
     {
         bottomLayout.setVisibility(View.GONE);
+    }
+
+    private void activateLoadingScreen()
+    {
+        hideError();
+        deactivateButtons();
+        showProgressCircle();
+    }
+
+    private void deactivateLoadingScreen()
+    {
+        activateButtons();
+        hideProgressCircle();
+    }
+
+    private void activateButtons()
+    {
+        findViewById(R.id.create_recipe_button).setEnabled(true);
+        findViewById(R.id.button_to_take_picture).setEnabled(true);
+    }
+
+    private void deactivateButtons()
+    {
+        findViewById(R.id.create_recipe_button).setEnabled(false);
+        findViewById(R.id.button_to_take_picture).setEnabled(false);
+    }
+
+    private void hideProgressCircle()
+    {
+        getProgessCircle().setVisibility(View.GONE);
+    }
+
+    private void showProgressCircle()
+    {
+        getProgessCircle().setVisibility(View.VISIBLE);
+    }
+
+    private void showError(String error)
+    {
+        if (error != null && error.length() > 0)
+        {
+            TextView errorMessage = findViewById(R.id.error_message);
+            errorMessage.setVisibility(View.VISIBLE);
+            errorMessage.setText(error);
+        }
+    }
+
+    private void hideError()
+    {
+        TextView errorMessage = findViewById(R.id.error_message);
+        errorMessage.setVisibility(View.GONE);
+    }
+
+    private ProgressBar getProgessCircle()
+    {
+        ProgressBar progressCircle = findViewById(R.id.progress_circle);
+        return progressCircle;
     }
 
     private void showToast(String content)
