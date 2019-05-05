@@ -28,4 +28,9 @@ public class ApiUrl
     {
         return apiUrl + "recipes";
     }
+
+    public static String getCheckTokenUrl()
+    {
+        return apiUrl + "/test/checkIfLogged";
+    }
 }

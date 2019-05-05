@@ -9,7 +9,22 @@ public class InMemoryTokenRepository implements ITokenRepository
     @Override
     public void saveToken(String token)
     {
-        this.token = token;
+        if(token != null && !token.isEmpty())
+        {
+            this.token = token;
+        }
+    }
+
+    @Override
+    public void removeToken()
+    {
+        token = null;
+    }
+
+    @Override
+    public boolean isTokenSaved()
+    {
+        return token != null && !token.isEmpty();
     }
 
     @Override
