@@ -104,7 +104,7 @@ public class RegisterActivity extends AppCompatActivity
             @Override
             public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable)
             {
-                Toast.makeText(getApplicationContext(), responseString, Toast.LENGTH_SHORT).show();
+                showError(responseString);
                 deactivateLoadingScreen();
             }
 
@@ -113,8 +113,14 @@ public class RegisterActivity extends AppCompatActivity
             {
                 Toast.makeText(getApplicationContext(), responseString, Toast.LENGTH_SHORT).show();
                 deactivateLoadingScreen();
+                successRegistration();
             }
         });
+    }
+
+    private void successRegistration()
+    {
+
     }
 
     private void showError(String error)
