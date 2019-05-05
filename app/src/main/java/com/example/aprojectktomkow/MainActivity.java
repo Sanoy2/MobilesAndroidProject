@@ -14,6 +14,9 @@ import android.widget.Toast;
 
 import com.example.aprojectktomkow.Models.Recipe;
 import com.example.aprojectktomkow.Providers.ApiUrl;
+import com.example.aprojectktomkow.Repositories.Token.ITokenRepository;
+import com.example.aprojectktomkow.Repositories.Token.InMemoryTokenRepository;
+import com.example.aprojectktomkow.Repositories.Token.IoC.IoC;
 import com.google.gson.Gson;
 import com.loopj.android.http.JsonHttpResponseHandler;
 
@@ -37,6 +40,7 @@ public class MainActivity extends AppCompatActivity
     private final FragmentManager fragmentManager = getSupportFragmentManager();
 
     private List<Recipe> recipes;
+    ITokenRepository tokenRepository = IoC.getTokenRepository();
 
     private BottomNavigationView.OnNavigationItemSelectedListener navSelectedItemListener
             = new BottomNavigationView.OnNavigationItemSelectedListener()

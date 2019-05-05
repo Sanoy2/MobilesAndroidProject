@@ -17,9 +17,13 @@ import com.example.aprojectktomkow.Models.Forms.IValidatorResult;
 import com.example.aprojectktomkow.Models.Forms.Login.LoginCommand;
 import com.example.aprojectktomkow.Models.Forms.Login.LoginForm;
 import com.example.aprojectktomkow.Providers.ApiUrl;
+import com.example.aprojectktomkow.Repositories.Token.ITokenRepository;
+import com.example.aprojectktomkow.Repositories.Token.IoC.IoC;
 import com.loopj.android.http.AsyncHttpClient;
+import com.loopj.android.http.JsonHttpResponseHandler;
 import com.loopj.android.http.TextHttpResponseHandler;
 
+import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.io.UnsupportedEncodingException;
@@ -31,6 +35,8 @@ public class LoginActivity extends AppCompatActivity
 {
     private final int REGISTRATION = 1;
     private final int REQUEST_SEND_DELAY = 750;
+
+    private ITokenRepository tokenRepository = IoC.getTokenRepository();
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -98,7 +104,7 @@ public class LoginActivity extends AppCompatActivity
         {
             e.printStackTrace();
         }
-        HttpUtils.post(getApplicationContext(), url, entity, "application/json", new TextHttpResponseHandler()
+        HttpUtils.post(getApplicationContext(), url, entity, "application/json", new JsonHttpResponseHandler()
         {
             @Override
             public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable)
@@ -108,9 +114,17 @@ public class LoginActivity extends AppCompatActivity
             }
 
             @Override
-            public void onSuccess(int statusCode, Header[] headers, String responseString)
+            public void onSuccess(int statusCode, Header[] headers, JSONObject jsonToken)
             {
-                Toast.makeText(getApplicationContext(), responseString, Toast.LENGTH_SHORT).show();
+                try
+                {
+                    String token = jsonToken.getString("token");
+                    Toast.makeText(getApplicationContext(), token, Toast.LENGTH_LONG).show();
+                }
+                catch (Exception ex)
+                {
+                    Toast.makeText(getApplicationContext(), ex.getMessage(), Toast.LENGTH_LONG).show();
+                }
                 deactivateLoadingScreen();
             }
         });
@@ -159,12 +173,14 @@ public class LoginActivity extends AppCompatActivity
     {
         hideError();
         deactivateButtons();
+        deactivateInputs();
         showProgressCircle();
     }
 
     private void deactivateLoadingScreen()
     {
         activateButtons();
+        activateInputs();
         hideProgressCircle();
     }
 
@@ -178,6 +194,18 @@ public class LoginActivity extends AppCompatActivity
     {
         findViewById(R.id.login_sign_in_button).setEnabled(false);
         findViewById(R.id.login_register_button).setEnabled(false);
+    }
+
+    private void activateInputs()
+    {
+        findViewById(R.id.email).setEnabled(true);
+        findViewById(R.id.password).setEnabled(true);
+    }
+
+    private void deactivateInputs()
+    {
+        findViewById(R.id.email).setEnabled(false);
+        findViewById(R.id.password).setEnabled(false);
     }
 
     private void hideProgressCircle()

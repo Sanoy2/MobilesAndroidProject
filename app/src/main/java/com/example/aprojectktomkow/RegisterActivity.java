@@ -172,14 +172,33 @@ public class RegisterActivity extends AppCompatActivity
     {
         hideError();
         deactivateButtons();
+        deactivateInputs();
         showProgressCircle();
     }
 
     private void deactivateLoadingScreen()
     {
         activateButtons();
+        activateInputs();
         hideProgressCircle();
     }
+
+    private void activateInputs()
+    {
+        findViewById(R.id.username).setEnabled(true);
+        findViewById(R.id.email).setEnabled(true);
+        findViewById(R.id.password).setEnabled(true);
+        findViewById(R.id.password_repeat).setEnabled(true);
+    }
+
+    private void deactivateInputs()
+    {
+        findViewById(R.id.username).setEnabled(false);
+        findViewById(R.id.email).setEnabled(false);
+        findViewById(R.id.password).setEnabled(false);
+        findViewById(R.id.password_repeat).setEnabled(false);
+    }
+
 
     private void activateButtons()
     {
