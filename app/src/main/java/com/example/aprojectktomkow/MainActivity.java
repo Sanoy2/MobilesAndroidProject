@@ -14,16 +14,13 @@ import android.widget.Toast;
 
 import com.example.aprojectktomkow.Models.Recipe;
 import com.example.aprojectktomkow.Providers.ApiUrl;
-import com.example.aprojectktomkow.Repositories.Token.ITokenRepository;
-import com.example.aprojectktomkow.Repositories.Token.InMemoryTokenRepository;
+import com.example.aprojectktomkow.Repositories.Token.IIdentityRepository;
 import com.example.aprojectktomkow.Repositories.Token.IoC.IoC;
 import com.google.gson.Gson;
 import com.loopj.android.http.JsonHttpResponseHandler;
 
 import org.json.JSONArray;
-import org.json.JSONException;
 import org.json.JSONObject;
-import org.w3c.dom.Text;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -33,6 +30,7 @@ import cz.msebera.android.httpclient.Header;
 public class MainActivity extends AppCompatActivity
 {
     private final Fragment fragmentAccount = new AccountFragment();
+    private final Fragment fragmentLoggedAccount = new LoggedAccountFragment();
     private final Fragment fragmentRecipes = new RecipesFragment();
     private final Fragment fragmentMyRecipes = new MyRecipesFragment();
     private final Fragment fragmentFavourites = new FavouritesFragment();
@@ -40,7 +38,7 @@ public class MainActivity extends AppCompatActivity
     private final FragmentManager fragmentManager = getSupportFragmentManager();
 
     private List<Recipe> recipes;
-    ITokenRepository tokenRepository = IoC.getTokenRepository();
+    IIdentityRepository identityRepository = IoC.getIdentityRepository();
 
     private BottomNavigationView.OnNavigationItemSelectedListener navSelectedItemListener
             = new BottomNavigationView.OnNavigationItemSelectedListener()
@@ -52,8 +50,10 @@ public class MainActivity extends AppCompatActivity
             switch (item.getItemId())
             {
                 case R.id.navigation_account:
-                    fragmentManager.beginTransaction().hide(activeFragment).show(fragmentAccount).commit();
-                    activeFragment = fragmentAccount;
+//                    fragmentManager.beginTransaction().hide(activeFragment).show(fragmentAccount).commit();
+//                    activeFragment = fragmentAccount;
+                    fragmentManager.beginTransaction().hide(activeFragment).show(fragmentLoggedAccount).commit();
+                    activeFragment = fragmentLoggedAccount;
                     break;
                 case R.id.navigation_recipes:
                     fragmentManager.beginTransaction().hide(activeFragment).show(fragmentRecipes).commit();
@@ -93,6 +93,8 @@ public class MainActivity extends AppCompatActivity
         fragmentManager.beginTransaction().add(R.id.fragment_container, fragmentRecipes, "2").hide(fragmentRecipes).commit();
         fragmentManager.beginTransaction().add(R.id.fragment_container, fragmentMyRecipes, "3").hide(fragmentMyRecipes).commit();
         fragmentManager.beginTransaction().add(R.id.fragment_container, fragmentFavourites, "4").hide(fragmentFavourites).commit();
+
+        fragmentManager.beginTransaction().add(R.id.fragment_container, fragmentLoggedAccount, "5").hide(fragmentLoggedAccount).commit();
     }
 
     public void increment(View view)
@@ -189,5 +191,10 @@ public class MainActivity extends AppCompatActivity
                 }
             }
         });
+    }
+
+    public void logout(View view)
+    {
+        identityRepository.logout();
     }
 }

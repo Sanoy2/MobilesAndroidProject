@@ -14,6 +14,11 @@
     <string name="go_to_login">Login</string>
     <string name="go_to_register">Register</string>
 
+    <!--Logged account fragment-->
+    <string name="logout">Logout</string>
+    <string name="logged_as_user">Logged as user:</string>
+    <string name="logged_with_email">Logged with email:</string>
+
     <!--Register-->
     <string name="register_username">Username</string>
     <string name="register_email">Email</string>

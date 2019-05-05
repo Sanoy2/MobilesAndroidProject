@@ -7,7 +7,6 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -17,13 +16,10 @@ import com.example.aprojectktomkow.Models.Forms.IValidatorResult;
 import com.example.aprojectktomkow.Models.Forms.Login.LoginCommand;
 import com.example.aprojectktomkow.Models.Forms.Login.LoginForm;
 import com.example.aprojectktomkow.Providers.ApiUrl;
-import com.example.aprojectktomkow.Repositories.Token.ITokenRepository;
+import com.example.aprojectktomkow.Repositories.Token.IIdentityRepository;
 import com.example.aprojectktomkow.Repositories.Token.IoC.IoC;
-import com.loopj.android.http.AsyncHttpClient;
 import com.loopj.android.http.JsonHttpResponseHandler;
-import com.loopj.android.http.TextHttpResponseHandler;
 
-import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.io.UnsupportedEncodingException;
@@ -36,7 +32,7 @@ public class LoginActivity extends AppCompatActivity
     private final int REGISTRATION = 1;
     private final int REQUEST_SEND_DELAY = 750;
 
-    private ITokenRepository tokenRepository = IoC.getTokenRepository();
+    private IIdentityRepository identityRepository = IoC.getIdentityRepository();
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -110,6 +106,7 @@ public class LoginActivity extends AppCompatActivity
             public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable)
             {
                 Toast.makeText(getApplicationContext(), responseString, Toast.LENGTH_SHORT).show();
+                showError(responseString);
                 deactivateLoadingScreen();
             }
 

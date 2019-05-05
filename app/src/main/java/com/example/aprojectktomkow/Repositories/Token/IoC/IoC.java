@@ -1,12 +1,12 @@
 package com.example.aprojectktomkow.Repositories.Token.IoC;
 
-import com.example.aprojectktomkow.Repositories.Token.ITokenRepository;
-import com.example.aprojectktomkow.Repositories.Token.InMemoryTokenRepository;
+import com.example.aprojectktomkow.Repositories.Token.IIdentityRepository;
+import com.example.aprojectktomkow.Repositories.Token.InMemoryIdentityRepository;
 
 public class IoC
 {
-    public static ITokenRepository getTokenRepository()
+    public static IIdentityRepository getIdentityRepository()
     {
-        return new InMemoryTokenRepository();
+        return new InMemoryIdentityRepository();
     }
 }
