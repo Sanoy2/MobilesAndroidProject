@@ -50,8 +50,7 @@ public class MainActivity extends AppCompatActivity
             switch (item.getItemId())
             {
                 case R.id.navigation_account:
-                    fragmentManager.beginTransaction().hide(activeFragment).show(getAccountFragment()).commit();
-                    activeFragment = getAccountFragment();
+                    showAccountFragment();
                     break;
                 case R.id.navigation_recipes:
                     fragmentManager.beginTransaction().hide(activeFragment).show(fragmentRecipes).commit();
@@ -202,6 +201,12 @@ public class MainActivity extends AppCompatActivity
         {
             return fragmentAccount;
         }
+    }
+
+    private void showAccountFragment()
+    {
+        fragmentManager.beginTransaction().hide(activeFragment).show(getAccountFragment()).commit();
+        activeFragment = getAccountFragment();
     }
 
     public void logout(View view)
