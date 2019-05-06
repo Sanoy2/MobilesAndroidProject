@@ -65,7 +65,6 @@ public class MainActivity extends AppCompatActivity
                     activeFragment = fragmentFavourites;
                     break;
             }
-
             return true;
         }
     };

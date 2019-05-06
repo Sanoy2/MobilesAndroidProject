@@ -6,4 +6,6 @@ public interface IIdentityRepository
     void logout();
     boolean isUserLogged();
     String getToken();
+    String getUsername();
+    String getEmail();
 }

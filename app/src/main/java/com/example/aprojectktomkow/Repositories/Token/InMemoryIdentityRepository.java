@@ -42,7 +42,7 @@ public class InMemoryIdentityRepository implements IIdentityRepository
        }
     }
 
-    private String getEmail()
+    public String getEmail()
     {
         return email;
     }
@@ -55,7 +55,7 @@ public class InMemoryIdentityRepository implements IIdentityRepository
         }
     }
 
-    private String getUsername()
+    public String getUsername()
     {
         return username;
     }
