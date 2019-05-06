@@ -31,6 +31,7 @@ public class LoginActivity extends AppCompatActivity
 {
     private final int REGISTRATION = 1;
     private final int REQUEST_SEND_DELAY = 750;
+    private final int FINISH_DELAY = 600;
 
     private IIdentityRepository identityRepository = IoC.getIdentityRepository();
 
@@ -119,9 +120,17 @@ public class LoginActivity extends AppCompatActivity
                     String username = jsonToken.getString("username");
                     String email = jsonToken.getString("email");
 //                    Toast.makeText(getApplicationContext(), token + "\n" + username + "\n" + email, Toast.LENGTH_LONG).show();
-                    Toast.makeText(getApplicationContext(), "Logged in", Toast.LENGTH_SHORT);
+                    Toast.makeText(getApplicationContext(), "Logged in", Toast.LENGTH_SHORT).show();
                     identityRepository.login(token, username, email);
-                    finish();
+                    Handler handler = new Handler();
+                    handler.postDelayed(new Runnable()
+                    {
+                        @Override
+                        public void run()
+                        {
+                            finish();
+                        }
+                    }, FINISH_DELAY);
                 }
                 catch (Exception ex)
                 {
