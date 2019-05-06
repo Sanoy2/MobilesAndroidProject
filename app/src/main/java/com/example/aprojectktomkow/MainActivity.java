@@ -50,10 +50,8 @@ public class MainActivity extends AppCompatActivity
             switch (item.getItemId())
             {
                 case R.id.navigation_account:
-//                    fragmentManager.beginTransaction().hide(activeFragment).show(fragmentAccount).commit();
-//                    activeFragment = fragmentAccount;
-                    fragmentManager.beginTransaction().hide(activeFragment).show(fragmentLoggedAccount).commit();
-                    activeFragment = fragmentLoggedAccount;
+                    fragmentManager.beginTransaction().hide(activeFragment).show(getAccountFragment()).commit();
+                    activeFragment = getAccountFragment();
                     break;
                 case R.id.navigation_recipes:
                     fragmentManager.beginTransaction().hide(activeFragment).show(fragmentRecipes).commit();
@@ -89,12 +87,13 @@ public class MainActivity extends AppCompatActivity
         BottomNavigationView navigation = findViewById(R.id.navigation);
         navigation.setOnNavigationItemSelectedListener(navSelectedItemListener);
 
-        fragmentManager.beginTransaction().add(R.id.fragment_container, fragmentAccount, "1").commit();
+        fragmentManager.beginTransaction().add(R.id.fragment_container, fragmentAccount, "1").hide(fragmentAccount).commit();
         fragmentManager.beginTransaction().add(R.id.fragment_container, fragmentRecipes, "2").hide(fragmentRecipes).commit();
         fragmentManager.beginTransaction().add(R.id.fragment_container, fragmentMyRecipes, "3").hide(fragmentMyRecipes).commit();
         fragmentManager.beginTransaction().add(R.id.fragment_container, fragmentFavourites, "4").hide(fragmentFavourites).commit();
-
         fragmentManager.beginTransaction().add(R.id.fragment_container, fragmentLoggedAccount, "5").hide(fragmentLoggedAccount).commit();
+
+        fragmentManager.beginTransaction().show(getAccountFragment()).commit();
     }
 
     public void increment(View view)
@@ -191,6 +190,18 @@ public class MainActivity extends AppCompatActivity
                 }
             }
         });
+    }
+
+    private Fragment getAccountFragment()
+    {
+        if(identityRepository.isUserLogged())
+        {
+            return fragmentLoggedAccount;
+        }
+        else
+        {
+            return fragmentAccount;
+        }
     }
 
     public void logout(View view)
