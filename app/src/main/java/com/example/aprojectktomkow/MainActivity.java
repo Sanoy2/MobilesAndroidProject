@@ -194,6 +194,12 @@ public class MainActivity extends AppCompatActivity
     {
         if(identityRepository.isUserLogged())
         {
+            TextView info_username = findViewById(R.id.info_username);
+            TextView info_email = findViewById(R.id.info_email);
+
+            info_username.setText(identityRepository.getUsername());
+            info_email.setText(identityRepository.getEmail());
+
             return fragmentLoggedAccount;
         }
         else
@@ -211,5 +217,6 @@ public class MainActivity extends AppCompatActivity
     public void logout(View view)
     {
         identityRepository.logout();
+        showAccountFragment();
     }
 }
