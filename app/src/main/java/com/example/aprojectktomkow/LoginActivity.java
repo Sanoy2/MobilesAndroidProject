@@ -29,7 +29,7 @@ import cz.msebera.android.httpclient.entity.StringEntity;
 
 public class LoginActivity extends AppCompatActivity
 {
-    private final int REGISTRATION = 1;
+    private final int REGISTRATION_RETURN = 1;
     private final int REQUEST_SEND_DELAY = 750;
     private final int FINISH_DELAY = 600;
 
@@ -42,6 +42,7 @@ public class LoginActivity extends AppCompatActivity
         setContentView(R.layout.activity_login);
 
         hideError();
+        hideMessage();
         deactivateLoadingScreen();
         setInitialValues();
     }
@@ -49,7 +50,33 @@ public class LoginActivity extends AppCompatActivity
     public void goToRegister(View view)
     {
         Intent intent = new Intent(this, RegisterActivity.class);
-        startActivityForResult(intent, REGISTRATION);
+        startActivityForResult(intent, REGISTRATION_RETURN);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == REGISTRATION_RETURN && resultCode == Activity.RESULT_OK)
+        {
+            Bundle extras = data.getExtras();
+            if (extras != null) {
+                String message = extras.getString("result");
+                String email = extras.getString("email");
+                String password = extras.getString("password");
+
+                if(email != null && !email.isEmpty())
+                {
+                    if(password != null && !password.isEmpty())
+                    {
+                        setInitialValues(email, password);
+                    }
+                }
+
+                if(message != null && !message.isEmpty())
+                {
+                    showMessage(message);
+                }
+            }
+        }
     }
 
     public void login(View view)
@@ -169,6 +196,22 @@ public class LoginActivity extends AppCompatActivity
         errorMessage.setVisibility(View.GONE);
     }
 
+    private void showMessage(String message)
+    {
+        if (message != null && message.length() > 0)
+        {
+            TextView justMessage = findViewById(R.id.just_message);
+            justMessage.setVisibility(View.VISIBLE);
+            justMessage.setText(message);
+        }
+    }
+
+    private void hideMessage()
+    {
+        TextView justMessage = findViewById(R.id.just_message);
+        justMessage.setVisibility(View.GONE);
+    }
+
     private static void hideKeyboard(Activity activity)
     {
         InputMethodManager imm = (InputMethodManager) activity.getSystemService(Activity.INPUT_METHOD_SERVICE);
@@ -183,6 +226,7 @@ public class LoginActivity extends AppCompatActivity
     private void activateLoadingScreen()
     {
         hideError();
+        hideMessage();
         deactivateButtons();
         deactivateInputs();
         showProgressCircle();
@@ -245,6 +289,14 @@ public class LoginActivity extends AppCompatActivity
 
         setResult(RESULT_OK, intent);
         super.finish();
+    }
+
+    private void setInitialValues(String email, String password)
+    {
+        EditText editText = findViewById(R.id.email);
+        editText.setText(email);
+        editText = findViewById(R.id.password);
+        editText.setText(password);
     }
 
     // temporary method

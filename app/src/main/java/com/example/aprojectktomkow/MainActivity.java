@@ -134,7 +134,6 @@ public class MainActivity extends AppCompatActivity
     public void goToLogin(View view)
     {
         Intent intent = new Intent(this, LoginActivity.class);
-//        startActivity(intent);
         startActivityForResult(intent, LOGIN_RETURNED);
     }
 
@@ -146,7 +145,6 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        Toast.makeText(getApplicationContext(), "returned", Toast.LENGTH_LONG).show();
         if (requestCode == LOGIN_RETURNED && resultCode == Activity.RESULT_OK) {
             Handler handler = new Handler();
             handler.postDelayed(new Runnable()
@@ -158,7 +156,6 @@ public class MainActivity extends AppCompatActivity
                 }
             }, 50);
         }
-
     }
 
     public void getAllRecipes(View view)

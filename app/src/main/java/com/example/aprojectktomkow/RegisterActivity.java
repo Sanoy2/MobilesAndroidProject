@@ -37,6 +37,7 @@ import cz.msebera.android.httpclient.entity.StringEntity;
 public class RegisterActivity extends AppCompatActivity
 {
     private final int REQUEST_SEND_DELAY = 750;
+    private boolean registrationSuccess = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -67,6 +68,7 @@ public class RegisterActivity extends AppCompatActivity
 
     private void register()
     {
+        registrationSuccess = false;
         RegistrationForm registerForm = new RegistrationForm();
         registerForm.setUsername(getUsername());
         registerForm.setEmail(getEmail());
@@ -104,6 +106,7 @@ public class RegisterActivity extends AppCompatActivity
             @Override
             public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable)
             {
+                registrationSuccess = false;
                 showError(responseString);
                 deactivateLoadingScreen();
             }
@@ -111,7 +114,6 @@ public class RegisterActivity extends AppCompatActivity
             @Override
             public void onSuccess(int statusCode, Header[] headers, String responseString)
             {
-                Toast.makeText(getApplicationContext(), responseString, Toast.LENGTH_SHORT).show();
                 deactivateLoadingScreen();
                 successRegistration();
             }
@@ -120,7 +122,8 @@ public class RegisterActivity extends AppCompatActivity
 
     private void successRegistration()
     {
-
+        registrationSuccess = true;
+        finish();
     }
 
     private void showError(String error)
@@ -237,9 +240,21 @@ public class RegisterActivity extends AppCompatActivity
     {
         Intent intent = new Intent();
 
-        intent.putExtra("result", "some result body");
+        if(registrationSuccess)
+        {
+            intent.putExtra("result", "Register completed successfully. You can log in now :)");
+            intent.putExtra("email", getEmail());
+            intent.putExtra("password", getPassword());
+        }
+        else
+        {
+            intent.putExtra("result", "Registration incomplete");
+            intent.putExtra("email", "");
+            intent.putExtra("password", "");
+        }
 
         setResult(RESULT_OK, intent);
+
         super.finish();
     }
 

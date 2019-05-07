@@ -94,6 +94,16 @@
                 android:textStyle="bold"
                 android:onClick="goToRegister"/>
 
+            <TextView
+                android:id="@+id/just_message"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:visibility="visible"
+                android:text="information"
+                android:textSize="15dp"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginTop="50dp"/>
+
         </LinearLayout>
     </ScrollView>
 </LinearLayout>
