@@ -133,8 +133,7 @@ public class LoginActivity extends AppCompatActivity
             @Override
             public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable)
             {
-                Toast.makeText(getApplicationContext(), responseString, Toast.LENGTH_SHORT).show();
-                showError(responseString);
+                showError(throwable.getMessage());
                 deactivateLoadingScreen();
             }
 
@@ -146,8 +145,6 @@ public class LoginActivity extends AppCompatActivity
                     String token = jsonToken.getString("token");
                     String username = jsonToken.getString("username");
                     String email = jsonToken.getString("email");
-//                    Toast.makeText(getApplicationContext(), token + "\n" + username + "\n" + email, Toast.LENGTH_LONG).show();
-//                    Toast.makeText(getApplicationContext(), "Logged in", Toast.LENGTH_SHORT).show();
                     identityRepository.login(token, username, email);
                     Handler handler = new Handler();
                     handler.postDelayed(new Runnable()
