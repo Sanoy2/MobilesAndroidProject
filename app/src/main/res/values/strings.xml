@@ -43,6 +43,10 @@
     <string name="create_recipe_image">Attach</string>
     <string name="create_recipe_button">Create</string>
 
+    <!--Recipes fragment-->
+    <string name="recipes_fire">Load recipes</string>
+
+
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="title_activity_create_recipie">CreateRecipieActivity</string>
