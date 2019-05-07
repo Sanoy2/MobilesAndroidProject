@@ -12,11 +12,13 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.LinearLayout;
+import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.aprojectktomkow.Models.Recipe;
+import com.example.aprojectktomkow.Models.RecipesListAdapter;
 import com.example.aprojectktomkow.Providers.ApiUrl;
 import com.example.aprojectktomkow.Repositories.Token.IIdentityRepository;
 import com.example.aprojectktomkow.Repositories.Token.IoC.IoC;
@@ -38,6 +40,8 @@ public class MainActivity extends AppCompatActivity
     private final int LOGIN_RETURNED = 1;
     private final int REQUEST_SEND_DELAY = 500;
 
+    private static final String TAG = "MainActivity";
+
     private final Fragment fragmentAccount = new AccountFragment();
     private final Fragment fragmentLoggedAccount = new LoggedAccountFragment();
     private final Fragment fragmentRecipes = new RecipesFragment();
@@ -45,8 +49,6 @@ public class MainActivity extends AppCompatActivity
     private final Fragment fragmentFavourites = new FavouritesFragment();
     private Fragment activeFragment = fragmentRecipes;
     private final FragmentManager fragmentManager = getSupportFragmentManager();
-
-    private LinearLayout recipesBottomLayout;
 
     private List<Recipe> recipes;
     IIdentityRepository identityRepository = IoC.getIdentityRepository();
@@ -263,14 +265,13 @@ public class MainActivity extends AppCompatActivity
             public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable)
             {
                 recipesShowError(throwable.getMessage());
-                recipesShowError(responseString);
                 recipesDeactivateLoadingScreen();
             }
 
             @Override
             public void onSuccess(int statusCode, Header[] headers, JSONObject response)
             {
-                recipesShowContent("Json object instead of array");
+                recipesShowError("Json object instead of array");
                 recipesDeactivateLoadingScreen();
             }
 
@@ -295,7 +296,7 @@ public class MainActivity extends AppCompatActivity
                         text = recipe.getName() + " " + recipe.getDescription();
                         builder.append(text).append("\n");
                     }
-                    recipesShowContent(builder.toString());
+                    recipesShowContent();
                     recipe = null;
 
                 }
@@ -354,8 +355,7 @@ public class MainActivity extends AppCompatActivity
                     }
 
                     recipe = null;
-                    TextView textView = findViewById(R.id.test_label);
-                    recipesShowContent(builder.toString());
+                    recipesShowContent();
                 }
                 catch (Exception e)
                 {
@@ -370,16 +370,25 @@ public class MainActivity extends AppCompatActivity
         });
     }
 
-    private void recipesShowContent(String content)
+    private void recipesShowContent()
     {
-        TextView textView = findViewById(R.id.test_label);
-        textView.setText(content);
+        recipesGetListView().setAdapter(recipesGetAdapter());
     }
 
     private void recipesClearContent()
     {
-        TextView textView = findViewById(R.id.test_label);
-        textView.setText("");
+        recipesGetListView().setAdapter(null);
     }
 
+    // Recipes adapter
+    private ListView recipesGetListView()
+    {
+        return findViewById(R.id.recipes_list_view);
+    }
+
+    private RecipesListAdapter recipesGetAdapter()
+    {
+        RecipesListAdapter adapter = new RecipesListAdapter(this, R.layout.recipe_adapter_layout, recipes);
+        return adapter;
+    }
 }

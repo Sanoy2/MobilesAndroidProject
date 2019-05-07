@@ -9,28 +9,18 @@
         android:id="@+id/recipes_title_text_view"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:paddingBottom="25dp"
+        android:paddingBottom="5dp"
         android:text="Recipes"
         android:textSize="30dp" />
 
-    <ScrollView
+    <ListView
+        android:id="@+id/recipes_list_view"
         android:layout_width="match_parent"
-        android:layout_height="500dp"
+        android:layout_height="match_parent"
+        android:layout_above="@+id/recipes_bottom_layout"
         android:layout_below="@+id/recipes_title_text_view">
 
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent">
-
-            <TextView
-                android:id="@+id/test_label"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="json will be here"
-                android:textSize="20dp" />
-        </LinearLayout>
-
-    </ScrollView>
+    </ListView>
 
     <LinearLayout
         android:id="@+id/recipes_bottom_layout"
@@ -48,7 +38,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal|center_vertical"
-            android:visibility="gone"/>
+            android:visibility="gone" />
 
         <TextView
             android:id="@+id/recipes_error_message"
