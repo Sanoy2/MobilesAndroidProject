@@ -19,11 +19,6 @@ public class HttpUtils {
         client.get(url, params, responseHandler);
     }
 
-//    public static void get(Context context, String url, Header[] headers, RequestParams params, AsyncHttpResponseHandler responseHandler)
-//    {
-//        client.get(context, url, headers, params, responseHandler);
-//    }
-
     public static void post(String url, RequestParams params, AsyncHttpResponseHandler responseHandler) {
         client.post(url, params, responseHandler);
     }
