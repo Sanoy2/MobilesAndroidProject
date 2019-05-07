@@ -34,5 +34,7 @@ public class ApiUrl
         return apiUrl + "recipes/loggeduser";
     }
 
+    public static String getRecipesUrlOnlyMyRecipes() { return apiUrl + "recipes/my"; }
+
     public static String getRecipesUrlCreate() { return apiUrl + "recipes"; }
 }

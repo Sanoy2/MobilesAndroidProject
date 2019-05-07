@@ -1,15 +1,70 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout
-    xmlns:android="http://schemas.android.com/apk/res/android" android:layout_width="match_parent"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@android:color/holo_orange_light">
+    android:background="@color/colorMyBackround"
+    android:padding="20dp">
 
-    <Button
-        android:id="@+id/create_recipe"
+    <TextView
+        android:id="@+id/my_recipes_title_text_view"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="create new recipe"
+        android:paddingBottom="5dp"
+        android:text="My Recipes"
+        android:textSize="30dp"
+        android:textStyle="bold" />
+
+    <ListView
+        android:id="@+id/my_recipes_list_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_above="@+id/my_recipes_bottom_layout"
+        android:layout_below="@+id/my_recipes_title_text_view">
+
+    </ListView>
+
+    <LinearLayout
+        android:id="@+id/my_recipes_bottom_layout"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
         android:layout_centerInParent="true"
-        android:onClick="createRecipe"/>
+        android:minWidth="200dp"
+        android:orientation="vertical"
+        android:visibility="visible">
+
+        <ProgressBar
+            android:id="@+id/my_recipes_progress_circle"
+            style="?android:attr/progressBarStyleLarge"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal|center_vertical"
+            android:visibility="gone" />
+
+        <TextView
+            android:id="@+id/my_recipes_error_message"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:text="potential error"
+            android:textColor="@color/colorError"
+            android:textSize="15dp"
+            android:visibility="gone" />
+
+        <Button
+            android:id="@+id/my_create_recipe"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical|center_horizontal"
+            android:onClick="createRecipe"
+            android:text="create new recipe" />
+
+        <Button
+            android:id="@+id/my_recipes_fire"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:onClick="my_getAllRecipes"
+            android:text="@string/recipes_fire" />
+    </LinearLayout>
 
 </RelativeLayout>

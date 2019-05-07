@@ -11,7 +11,8 @@
         android:layout_height="wrap_content"
         android:paddingBottom="5dp"
         android:text="Recipes"
-        android:textSize="30dp" />
+        android:textSize="30dp"
+        android:textStyle="bold"/>
 
     <ListView
         android:id="@+id/recipes_list_view"

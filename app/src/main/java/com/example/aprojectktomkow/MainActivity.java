@@ -53,6 +53,7 @@ public class MainActivity extends AppCompatActivity
     private final FragmentManager fragmentManager = getSupportFragmentManager();
 
     private List<Recipe> recipes;
+    private List<Recipe> my_recipes;
     IIdentityRepository identityRepository = IoC.getIdentityRepository();
 
     private BottomNavigationView.OnNavigationItemSelectedListener navSelectedItemListener
@@ -72,8 +73,7 @@ public class MainActivity extends AppCompatActivity
                     activeFragment = fragmentRecipes;
                     break;
                 case R.id.navigation_my_recipes:
-                    fragmentManager.beginTransaction().hide(activeFragment).show(fragmentMyRecipes).commit();
-                    activeFragment = fragmentMyRecipes;
+                    showMyRecipesFragment();
                     break;
                 case R.id.navigation_favourites:
                     fragmentManager.beginTransaction().hide(activeFragment).show(fragmentFavourites).commit();
@@ -98,6 +98,7 @@ public class MainActivity extends AppCompatActivity
 
         // INIT START
         recipes = new ArrayList<>();
+        my_recipes = new ArrayList<>();
 
         BottomNavigationView navigation = findViewById(R.id.navigation);
         navigation.setOnNavigationItemSelectedListener(navSelectedItemListener);
@@ -111,8 +112,6 @@ public class MainActivity extends AppCompatActivity
         fragmentManager.beginTransaction().show(getAccountFragment()).commit();
 
         // INIT END
-
-
     }
 
     public void goToRegister(View view)
@@ -172,6 +171,19 @@ public class MainActivity extends AppCompatActivity
     {
         fragmentManager.beginTransaction().hide(activeFragment).show(getAccountFragment()).commit();
         activeFragment = getAccountFragment();
+    }
+
+    private void showMyRecipesFragment()
+    {
+        if(identityRepository.isUserLogged())
+        {
+            fragmentManager.beginTransaction().hide(activeFragment).show(fragmentMyRecipes).commit();
+            activeFragment = fragmentMyRecipes;
+        }
+        else
+        {
+            showAccountFragment();
+        }
     }
 
     public void logout(View view)
@@ -257,7 +269,6 @@ public class MainActivity extends AppCompatActivity
                 }
             }
         }, REQUEST_SEND_DELAY);
-
     }
 
     private void getAllRecipesNonLogged()
@@ -378,8 +389,6 @@ public class MainActivity extends AppCompatActivity
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id)
             {
-                // Get the selected item text from ListView
-//                Recipe selectedItem = (Recipe) parent.getItemAtPosition(position);
                 Recipe recipe = recipes.get((int) id);
                 goToDetails(recipe);
             }
@@ -420,4 +429,172 @@ public class MainActivity extends AppCompatActivity
         RecipesListAdapter adapter = new RecipesListAdapter(this, R.layout.recipe_adapter_layout, recipes);
         return adapter;
     }
+
+    // My recipes
+
+    private void my_recipesActivateLoadingScreen()
+    {
+        my_recipesHideError();
+        my_recipesDeactivateButtons();
+        my_recipesShowProgressCircle();
+    }
+
+    private void my_recipesDeactivateLoadingScreen()
+    {
+        my_recipesActivateButtons();
+        my_resipesHideProgressCircle();
+    }
+
+    private void my_recipesActivateButtons()
+    {
+        findViewById(R.id.my_recipes_fire).setEnabled(true);
+    }
+
+    private void my_recipesDeactivateButtons()
+    {
+        findViewById(R.id.my_recipes_fire).setEnabled(false);
+    }
+
+    private void my_resipesHideProgressCircle()
+    {
+        my_recipesGetProgressCircle().setVisibility(View.GONE);
+    }
+
+    private void my_recipesShowProgressCircle()
+    {
+        my_recipesGetProgressCircle().setVisibility(View.VISIBLE);
+    }
+
+    private void my_recipesShowError(String error)
+    {
+        if (error != null && error.length() > 0)
+        {
+            TextView errorMessage = findViewById(R.id.my_recipes_error_message);
+            errorMessage.setVisibility(View.VISIBLE);
+            errorMessage.setText(error);
+        }
+    }
+
+    private void my_recipesHideError()
+    {
+        TextView errorMessage = findViewById(R.id.my_recipes_error_message);
+        errorMessage.setVisibility(View.GONE);
+    }
+
+    private ProgressBar my_recipesGetProgressCircle()
+    {
+        ProgressBar progressCircle = findViewById(R.id.my_recipes_progress_circle);
+        return progressCircle;
+    }
+
+    public void my_getAllRecipes(View view)
+    {
+        my_recipesHideError();
+        my_recipesActivateLoadingScreen();
+        my_recipesClearContent();
+
+        Handler handler = new Handler();
+        handler.postDelayed(new Runnable()
+        {
+            @Override
+            public void run()
+            {
+                if (identityRepository.isUserLogged())
+                {
+                    my_getAllRecipesUserLogged();
+                } else
+                {
+                    my_recipesShowError("You must be logged in");
+                }
+            }
+        }, REQUEST_SEND_DELAY);
+    }
+
+    private void my_getAllRecipesUserLogged()
+    {
+        String url = ApiUrl.getRecipesUrlOnlyMyRecipes();
+        HttpUtils.attachToken(identityRepository.getToken());
+        HttpUtils.get(url, null, new JsonHttpResponseHandler()
+        {
+            @Override
+            public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable)
+            {
+                my_recipesShowError(throwable.getMessage());
+                my_recipesDeactivateLoadingScreen();
+            }
+
+            @Override
+            public void onSuccess(int statusCode, Header[] headers, JSONObject response)
+            {
+                my_recipesShowError("Json object instead of array");
+                my_recipesDeactivateLoadingScreen();
+            }
+
+            @Override
+            public void onSuccess(int statusCode, Header[] headers, JSONArray timeline)
+            {
+                my_recipes.clear();
+                try
+                {
+                    int objectsNumber = timeline.length();
+                    StringBuilder builder = new StringBuilder();
+                    JSONObject json;
+                    String text;
+                    Recipe recipe;
+                    Gson gson = new Gson();
+                    for (int i = 0; i < objectsNumber; i++)
+                    {
+                        json = (JSONObject) timeline.get(i);
+                        recipe = gson.fromJson(json.toString(), Recipe.class);
+                        my_recipes.add(recipe);
+
+                        text = recipe.getName() + " " + recipe.getDescription();
+                        builder.append(text).append("\n");
+                    }
+                    Toast.makeText(getApplicationContext(), String.valueOf(objectsNumber), Toast.LENGTH_LONG).show();
+                    recipe = null;
+                    my_recipesShowContent();
+                } catch (Exception e)
+                {
+                    Toast.makeText(getApplicationContext(), "Exception: " + e.getMessage(), Toast.LENGTH_LONG).show();
+                    my_recipesShowError("Exception: " + e.getMessage());
+                } finally
+                {
+                    my_recipesDeactivateLoadingScreen();
+                }
+            }
+        });
+    }
+
+    private void my_recipesShowContent()
+    {
+        my_recipesGetListView().setAdapter(my_recipesGetAdapter());
+        my_recipesGetListView().setOnItemClickListener(new AdapterView.OnItemClickListener()
+        {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id)
+            {
+                Recipe recipe = my_recipes.get((int) id);
+                goToDetails(recipe);
+            }
+        });
+    }
+
+    private void my_recipesClearContent()
+    {
+        my_recipesGetListView().setAdapter(null);
+    }
+
+    // Recipes adapter
+    private ListView my_recipesGetListView()
+    {
+        return findViewById(R.id.my_recipes_list_view);
+    }
+
+    private RecipesListAdapter my_recipesGetAdapter()
+    {
+        RecipesListAdapter adapter = new RecipesListAdapter(this, R.layout.recipe_adapter_layout, my_recipes);
+        return adapter;
+    }
+
 }

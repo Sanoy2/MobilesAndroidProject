@@ -12,7 +12,7 @@
 
     <!--Account fragment-->
     <string name="go_to_login">Login or Register</string>
-    <string name="not_logged">You are not logged in yet</string>
+    <string name="not_logged">You are not logged in yet. Login or register to browse your recipes and add new ones</string>
 
     <!--Logged account fragment-->
     <string name="logout">Logout</string>
