@@ -11,8 +11,8 @@
     <string name="title_favourites">Favourites</string>
 
     <!--Account fragment-->
-    <string name="go_to_login">Login</string>
-    <string name="go_to_register">Register</string>
+    <string name="go_to_login">Login or Register</string>
+    <string name="not_logged">You are not logged in yet</string>
 
     <!--Logged account fragment-->
     <string name="logout">Logout</string>

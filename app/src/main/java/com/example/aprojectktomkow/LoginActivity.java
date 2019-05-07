@@ -120,7 +120,7 @@ public class LoginActivity extends AppCompatActivity
                     String username = jsonToken.getString("username");
                     String email = jsonToken.getString("email");
 //                    Toast.makeText(getApplicationContext(), token + "\n" + username + "\n" + email, Toast.LENGTH_LONG).show();
-                    Toast.makeText(getApplicationContext(), "Logged in", Toast.LENGTH_SHORT).show();
+//                    Toast.makeText(getApplicationContext(), "Logged in", Toast.LENGTH_SHORT).show();
                     identityRepository.login(token, username, email);
                     Handler handler = new Handler();
                     handler.postDelayed(new Runnable()

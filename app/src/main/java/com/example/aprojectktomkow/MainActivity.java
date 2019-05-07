@@ -1,7 +1,9 @@
 package com.example.aprojectktomkow;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
 import android.support.v4.app.Fragment;
@@ -29,6 +31,8 @@ import cz.msebera.android.httpclient.Header;
 
 public class MainActivity extends AppCompatActivity
 {
+    private final int LOGIN_RETURNED = 1;
+
     private final Fragment fragmentAccount = new AccountFragment();
     private final Fragment fragmentLoggedAccount = new LoggedAccountFragment();
     private final Fragment fragmentRecipes = new RecipesFragment();
@@ -130,13 +134,31 @@ public class MainActivity extends AppCompatActivity
     public void goToLogin(View view)
     {
         Intent intent = new Intent(this, LoginActivity.class);
-        startActivity(intent);
+//        startActivity(intent);
+        startActivityForResult(intent, LOGIN_RETURNED);
     }
 
     public void createRecipe(View view)
     {
         Intent intent = new Intent(this, CreateRecipeActivity.class);
         startActivity(intent);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        Toast.makeText(getApplicationContext(), "returned", Toast.LENGTH_LONG).show();
+        if (requestCode == LOGIN_RETURNED && resultCode == Activity.RESULT_OK) {
+            Handler handler = new Handler();
+            handler.postDelayed(new Runnable()
+            {
+                @Override
+                public void run()
+                {
+                    showAccountFragment();
+                }
+            }, 50);
+        }
+
     }
 
     public void getAllRecipes(View view)

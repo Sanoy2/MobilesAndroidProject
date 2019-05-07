@@ -19,7 +19,7 @@
         android:layout_height="wrap_content"
         android:layout_centerInParent="true"
         android:stretchColumns="1"
-        android:paddingBottom="300dp">
+        android:paddingBottom="200dp">
         <TableRow>
             <TextView
                 android:layout_width="match_parent"
@@ -63,7 +63,7 @@
         android:onClick="logout"
         android:paddingLeft="30dp"
         android:paddingRight="30dp"
-        android:textSize="30dp"
+        android:textSize="25dp"
         android:text="@string/logout"
         android:layout_centerHorizontal="true"
         android:layout_alignParentBottom="true"/>

@@ -1,9 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
+<RelativeLayout
     xmlns:android="http://schemas.android.com/apk/res/android" android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@android:color/holo_red_light"
-    android:orientation="vertical">
+    android:background="@color/colorMyBackround"
+    android:orientation="vertical"
+    android:padding="20dp">
 
     <TextView
         android:id="@+id/idd"
@@ -12,19 +13,27 @@
         android:text="Account fragment"
         android:textSize="30dp"/>
 
+<LinearLayout
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:layout_centerInParent="true">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="30dp"
+        android:text="@string/not_logged"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginBottom="100dp"/>
+
     <Button
         android:id="@+id/go_to_login_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/go_to_login"
-        android:onClick="goToLogin"/>
-
-    <Button
-        android:id="@+id/go_to_register_button"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/go_to_register"
-        android:onClick="goToRegister"
-        android:visibility="gone"/>
-
+        android:onClick="goToLogin"
+        android:textSize="20dp"
+        android:layout_gravity="center_horizontal"/>
 </LinearLayout>
+</RelativeLayout>
