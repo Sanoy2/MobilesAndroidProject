@@ -24,9 +24,13 @@ public class ApiUrl
         return apiUrl + "users/login";
     }
 
-    public static String getRecipesUrl()
+    public static String getRecipesUrlNonLoggedUser()
     {
         return apiUrl + "recipes";
+    }
+    public static String getRecipesUrlLoggedUser()
+    {
+        return apiUrl + "recipes/loggeduser";
     }
 
     public static String getCheckTokenUrl()

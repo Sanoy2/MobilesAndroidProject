@@ -141,12 +141,66 @@ public class MainActivity extends AppCompatActivity
 
     public void getAllRecipes(View view)
     {
-        getAllRecipes();
+        if(identityRepository.isUserLogged())
+        {
+            getAllRecipesUserLogged();
+        }
+        else
+        {
+            getAllRecipesNonLogged();
+        }
+
     }
 
-    private void getAllRecipes()
+    private void getAllRecipesNonLogged()
     {
-        String url = ApiUrl.getRecipesUrl();
+        String url = ApiUrl.getRecipesUrlNonLoggedUser();
+        HttpUtils.get(url, null, new JsonHttpResponseHandler()
+        {
+            @Override
+            public void onSuccess(int statusCode, Header[] headers, JSONObject response)
+            {
+                TextView textView = findViewById(R.id.test_label);
+                textView.setText("Json object instead of array");
+            }
+
+            @Override
+            public void onSuccess(int statusCode, Header[] headers, JSONArray timeline)
+            {
+                recipes.clear();
+                try
+                {
+                    int objectsNumber = timeline.length();
+                    StringBuilder builder = new StringBuilder();
+                    JSONObject json;
+                    String text;
+                    Recipe recipe;
+                    Gson gson = new Gson();
+                    for (int i = 0; i < objectsNumber; i++)
+                    {
+                        json = (JSONObject) timeline.get(i);
+                        recipe = gson.fromJson(json.toString(), Recipe.class);
+                        recipes.add(recipe);
+
+                        text = recipe.getName() + " " + recipe.getDescription();
+                        builder.append(text).append("\n");
+                    }
+
+                    recipe = null;
+                    TextView textView = findViewById(R.id.test_label);
+                    textView.setText(builder.toString());
+                }
+                catch (Exception e)
+                {
+                    Toast.makeText(getApplicationContext(), "Exception: " + e.getMessage(), Toast.LENGTH_LONG).show();
+                }
+            }
+        });
+    }
+
+    private void getAllRecipesUserLogged()
+    {
+        String url = ApiUrl.getRecipesUrlNonLoggedUser();
         HttpUtils.get(url, null, new JsonHttpResponseHandler()
         {
             @Override
