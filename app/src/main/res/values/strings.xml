@@ -35,7 +35,7 @@
 
     <!--Create recipe-->
     <string name="create_recipe_activity_title">Create recipe</string>
-    <string name="create_recipe_title">Recipe title</string>
+    <string name="create_recipe_title">Recipe name</string>
     <string name="create_recipe_needed_time">Needed time (minutes)</string>
     <string name="create_recipe_short_description">Short description</string>
     <string name="create_recipe_description">Recipe full description:</string>

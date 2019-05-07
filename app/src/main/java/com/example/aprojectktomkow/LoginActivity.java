@@ -55,6 +55,7 @@ public class LoginActivity extends AppCompatActivity
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        hideError();
         if (requestCode == REGISTRATION_RETURN && resultCode == Activity.RESULT_OK)
         {
             Bundle extras = data.getExtras();
