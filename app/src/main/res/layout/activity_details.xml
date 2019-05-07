@@ -19,10 +19,17 @@
         android:text="Sample name"
         android:textSize="30dp"/>
     <TextView
-        android:id="@+id/recipe_detail_time"
+        android:id="@+id/recipe_detail_short_description"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@id/recipe_detail_name"
+        android:text="Sample name"
+        android:textSize="15dp"/>
+    <TextView
+        android:id="@+id/recipe_detail_time"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/recipe_detail_short_description"
         android:text="50 minutes"
         android:textSize="20dp"/>
     <TextView

@@ -23,6 +23,7 @@ public class DetailsActivity extends AppCompatActivity
             setNeededTime(extras.getInt("neededTime"));
             setLastDateModification(extras.getString("lastModification"));
             setIsPrivate(extras.getBoolean("isPrivate"));
+            setShortDescription(extras.getString("shortDescription"));
         }
     }
 
@@ -61,7 +62,8 @@ public class DetailsActivity extends AppCompatActivity
 
     private void setShortDescription(String value)
     {
-
+        TextView textView = findViewById(R.id.recipe_detail_short_description);
+        textView.setText(value);
     }
 
     private void setLastDateModification(String value)
