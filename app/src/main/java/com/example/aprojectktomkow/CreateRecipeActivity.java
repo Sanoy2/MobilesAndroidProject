@@ -247,6 +247,7 @@ public class CreateRecipeActivity extends AppCompatActivity
     public void sendNewRecipe(View view)
     {
         activateLoadingScreen();
+        deactivateButtons();
         hideError();
 
         Handler handler = new Handler();
@@ -265,7 +266,7 @@ public class CreateRecipeActivity extends AppCompatActivity
         NewRecipeForm form = getRecipeForm();
 
         IValidatorResult formValidationResult = form.Validate();
-        if(identityRepository.isUserLogged() || true) // TODO: CHANGE IT
+        if(identityRepository.isUserLogged())
         {
             if (formValidationResult.isValid())
             {
@@ -280,6 +281,8 @@ public class CreateRecipeActivity extends AppCompatActivity
         else
         {
             showError("User must be logged in to send recipe");
+            deactivateLoadingScreen();
+            activateButtons();
         }
     }
 
@@ -307,18 +310,20 @@ public class CreateRecipeActivity extends AppCompatActivity
             @Override
             public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable)
             {
-//                showError(throwable.getMessage());
-                showError(jsonParams.toString() + "\n" + throwable.getMessage());
+                showError(throwable.getMessage());
                 deactivateLoadingScreen();
+                activateButtons();
             }
 
             @Override
             public void onSuccess(int statusCode, Header[] headers, String responseString)
             {
+                Toast.makeText(getApplicationContext(), "Recipe successfully created :)", Toast.LENGTH_LONG).show();
                 deactivateLoadingScreen();
+                activateButtons();
+                finish();
             }
         });
-
     }
 
     private NewRecipeForm getRecipeForm()
