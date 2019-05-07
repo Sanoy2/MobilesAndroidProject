@@ -30,8 +30,8 @@ import cz.msebera.android.httpclient.entity.StringEntity;
 public class LoginActivity extends AppCompatActivity
 {
     private final int REGISTRATION_RETURN = 1;
-    private final int REQUEST_SEND_DELAY = 750;
-    private final int FINISH_DELAY = 600;
+    private final int REQUEST_SEND_DELAY = 600;
+    private final int FINISH_DELAY = 250;
 
     private IIdentityRepository identityRepository = IoC.getIdentityRepository();
 

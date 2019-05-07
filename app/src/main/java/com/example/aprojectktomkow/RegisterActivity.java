@@ -36,7 +36,7 @@ import cz.msebera.android.httpclient.entity.StringEntity;
 
 public class RegisterActivity extends AppCompatActivity
 {
-    private final int REQUEST_SEND_DELAY = 750;
+    private final int REQUEST_SEND_DELAY = 600;
     private boolean registrationSuccess = false;
 
     @Override

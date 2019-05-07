@@ -30,6 +30,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import cz.msebera.android.httpclient.Header;
+import cz.msebera.android.httpclient.HeaderElement;
+import cz.msebera.android.httpclient.ParseException;
 
 public class MainActivity extends AppCompatActivity
 {
@@ -231,6 +233,7 @@ public class MainActivity extends AppCompatActivity
     {
         recipesHideError();
         recipesActivateLoadingScreen();
+        recipesClearContent();
 
         Handler handler = new Handler();
         handler.postDelayed(new Runnable()
@@ -259,6 +262,7 @@ public class MainActivity extends AppCompatActivity
             @Override
             public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable)
             {
+                recipesShowError(throwable.getMessage());
                 recipesShowError(responseString);
                 recipesDeactivateLoadingScreen();
             }
@@ -266,8 +270,7 @@ public class MainActivity extends AppCompatActivity
             @Override
             public void onSuccess(int statusCode, Header[] headers, JSONObject response)
             {
-                TextView textView = findViewById(R.id.test_label);
-                textView.setText("Json object instead of array");
+                recipesShowContent("Json object instead of array");
                 recipesDeactivateLoadingScreen();
             }
 
@@ -292,10 +295,9 @@ public class MainActivity extends AppCompatActivity
                         text = recipe.getName() + " " + recipe.getDescription();
                         builder.append(text).append("\n");
                     }
-
+                    recipesShowContent(builder.toString());
                     recipe = null;
-                    TextView textView = findViewById(R.id.test_label);
-                    textView.setText(builder.toString());
+
                 }
                 catch (Exception e)
                 {
@@ -311,14 +313,14 @@ public class MainActivity extends AppCompatActivity
 
     private void getAllRecipesUserLogged()
     {
-        String url = ApiUrl.getRecipesUrlNonLoggedUser();
+        String url = ApiUrl.getRecipesUrlLoggedUser();
+        HttpUtils.attachToken(identityRepository.getToken());
         HttpUtils.get(url, null, new JsonHttpResponseHandler()
         {
             @Override
             public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable)
             {
-                Toast.makeText(getApplicationContext(), responseString, Toast.LENGTH_SHORT).show();
-                recipesShowError(responseString);
+                recipesShowError(throwable.getMessage());
                 recipesDeactivateLoadingScreen();
             }
 
@@ -353,11 +355,12 @@ public class MainActivity extends AppCompatActivity
 
                     recipe = null;
                     TextView textView = findViewById(R.id.test_label);
-                    textView.setText(builder.toString());
+                    recipesShowContent(builder.toString());
                 }
                 catch (Exception e)
                 {
                     Toast.makeText(getApplicationContext(), "Exception: " + e.getMessage(), Toast.LENGTH_LONG).show();
+                    recipesShowError("Exception: " + e.getMessage());
                 }
                 finally
                 {
@@ -365,6 +368,18 @@ public class MainActivity extends AppCompatActivity
                 }
             }
         });
+    }
+
+    private void recipesShowContent(String content)
+    {
+        TextView textView = findViewById(R.id.test_label);
+        textView.setText(content);
+    }
+
+    private void recipesClearContent()
+    {
+        TextView textView = findViewById(R.id.test_label);
+        textView.setText("");
     }
 
 }
