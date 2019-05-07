@@ -11,6 +11,7 @@ import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.ProgressBar;
@@ -38,6 +39,7 @@ import cz.msebera.android.httpclient.ParseException;
 public class MainActivity extends AppCompatActivity
 {
     private final int LOGIN_RETURNED = 1;
+    private final int DETAILS_RETURNED = 1;
     private final int REQUEST_SEND_DELAY = 500;
 
     private static final String TAG = "MainActivity";
@@ -109,6 +111,8 @@ public class MainActivity extends AppCompatActivity
         fragmentManager.beginTransaction().show(getAccountFragment()).commit();
 
         // INIT END
+
+
     }
 
     public void goToRegister(View view)
@@ -130,8 +134,10 @@ public class MainActivity extends AppCompatActivity
     }
 
     @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (requestCode == LOGIN_RETURNED && resultCode == Activity.RESULT_OK) {
+    protected void onActivityResult(int requestCode, int resultCode, Intent data)
+    {
+        if (requestCode == LOGIN_RETURNED && resultCode == Activity.RESULT_OK)
+        {
             Handler handler = new Handler();
             handler.postDelayed(new Runnable()
             {
@@ -147,7 +153,7 @@ public class MainActivity extends AppCompatActivity
 
     private Fragment getAccountFragment()
     {
-        if(identityRepository.isUserLogged())
+        if (identityRepository.isUserLogged())
         {
             TextView info_username = findViewById(R.id.info_username);
             TextView info_email = findViewById(R.id.info_email);
@@ -156,8 +162,7 @@ public class MainActivity extends AppCompatActivity
             info_email.setText(identityRepository.getEmail());
 
             return fragmentLoggedAccount;
-        }
-        else
+        } else
         {
             return fragmentAccount;
         }
@@ -243,11 +248,10 @@ public class MainActivity extends AppCompatActivity
             @Override
             public void run()
             {
-                if(identityRepository.isUserLogged())
+                if (identityRepository.isUserLogged())
                 {
                     getAllRecipesUserLogged();
-                }
-                else
+                } else
                 {
                     getAllRecipesNonLogged();
                 }
@@ -299,12 +303,10 @@ public class MainActivity extends AppCompatActivity
                     recipesShowContent();
                     recipe = null;
 
-                }
-                catch (Exception e)
+                } catch (Exception e)
                 {
                     Toast.makeText(getApplicationContext(), "Exception: " + e.getMessage(), Toast.LENGTH_LONG).show();
-                }
-                finally
+                } finally
                 {
                     recipesDeactivateLoadingScreen();
                 }
@@ -356,13 +358,11 @@ public class MainActivity extends AppCompatActivity
 
                     recipe = null;
                     recipesShowContent();
-                }
-                catch (Exception e)
+                } catch (Exception e)
                 {
                     Toast.makeText(getApplicationContext(), "Exception: " + e.getMessage(), Toast.LENGTH_LONG).show();
                     recipesShowError("Exception: " + e.getMessage());
-                }
-                finally
+                } finally
                 {
                     recipesDeactivateLoadingScreen();
                 }
@@ -373,6 +373,35 @@ public class MainActivity extends AppCompatActivity
     private void recipesShowContent()
     {
         recipesGetListView().setAdapter(recipesGetAdapter());
+        recipesGetListView().setOnItemClickListener(new AdapterView.OnItemClickListener()
+        {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id)
+            {
+                // Get the selected item text from ListView
+//                Recipe selectedItem = (Recipe) parent.getItemAtPosition(position);
+                Recipe recipe = recipes.get((int) id);
+                goToDetails(recipe);
+            }
+        });
+    }
+
+    private void goToDetails(Recipe recipe)
+    {
+        Intent intent = new Intent(this, DetailsActivity.class);
+
+        Bundle b = new Bundle();
+        b.putString("name", recipe.getName());
+        b.putString("description", recipe.getDescription());
+        b.putString("shortDescription", recipe.getShortDescription());
+        b.putString("imageUrl", recipe.getMainImageUrl());
+        b.putInt("neededTime", recipe.getNeededTimeMinutes());
+        b.putString("lastModification", recipe.getDateOfLastModification().toString());
+        b.putBoolean("isPrivate", recipe.isPrivate());
+
+        intent.putExtras(b);
+
+        startActivityForResult(intent, DETAILS_RETURNED);
     }
 
     private void recipesClearContent()
