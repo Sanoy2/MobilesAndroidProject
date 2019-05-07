@@ -7,7 +7,6 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -17,8 +16,9 @@ import com.example.aprojectktomkow.Models.Forms.IValidatorResult;
 import com.example.aprojectktomkow.Models.Forms.Login.LoginCommand;
 import com.example.aprojectktomkow.Models.Forms.Login.LoginForm;
 import com.example.aprojectktomkow.Providers.ApiUrl;
-import com.loopj.android.http.AsyncHttpClient;
-import com.loopj.android.http.TextHttpResponseHandler;
+import com.example.aprojectktomkow.Repositories.Token.IIdentityRepository;
+import com.example.aprojectktomkow.Repositories.Token.IoC.IoC;
+import com.loopj.android.http.JsonHttpResponseHandler;
 
 import org.json.JSONObject;
 
@@ -29,8 +29,11 @@ import cz.msebera.android.httpclient.entity.StringEntity;
 
 public class LoginActivity extends AppCompatActivity
 {
-    private final int REGISTRATION = 1;
+    private final int REGISTRATION_RETURN = 1;
     private final int REQUEST_SEND_DELAY = 750;
+    private final int FINISH_DELAY = 600;
+
+    private IIdentityRepository identityRepository = IoC.getIdentityRepository();
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -39,6 +42,7 @@ public class LoginActivity extends AppCompatActivity
         setContentView(R.layout.activity_login);
 
         hideError();
+        hideMessage();
         deactivateLoadingScreen();
         setInitialValues();
     }
@@ -46,7 +50,33 @@ public class LoginActivity extends AppCompatActivity
     public void goToRegister(View view)
     {
         Intent intent = new Intent(this, RegisterActivity.class);
-        startActivityForResult(intent, REGISTRATION);
+        startActivityForResult(intent, REGISTRATION_RETURN);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == REGISTRATION_RETURN && resultCode == Activity.RESULT_OK)
+        {
+            Bundle extras = data.getExtras();
+            if (extras != null) {
+                String message = extras.getString("result");
+                String email = extras.getString("email");
+                String password = extras.getString("password");
+
+                if(email != null && !email.isEmpty())
+                {
+                    if(password != null && !password.isEmpty())
+                    {
+                        setInitialValues(email, password);
+                    }
+                }
+
+                if(message != null && !message.isEmpty())
+                {
+                    showMessage(message);
+                }
+            }
+        }
     }
 
     public void login(View view)
@@ -98,19 +128,41 @@ public class LoginActivity extends AppCompatActivity
         {
             e.printStackTrace();
         }
-        HttpUtils.post(getApplicationContext(), url, entity, "application/json", new TextHttpResponseHandler()
+        HttpUtils.post(getApplicationContext(), url, entity, "application/json", new JsonHttpResponseHandler()
         {
             @Override
             public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable)
             {
                 Toast.makeText(getApplicationContext(), responseString, Toast.LENGTH_SHORT).show();
+                showError(responseString);
                 deactivateLoadingScreen();
             }
 
             @Override
-            public void onSuccess(int statusCode, Header[] headers, String responseString)
+            public void onSuccess(int statusCode, Header[] headers, JSONObject jsonToken)
             {
-                Toast.makeText(getApplicationContext(), responseString, Toast.LENGTH_SHORT).show();
+                try
+                {
+                    String token = jsonToken.getString("token");
+                    String username = jsonToken.getString("username");
+                    String email = jsonToken.getString("email");
+//                    Toast.makeText(getApplicationContext(), token + "\n" + username + "\n" + email, Toast.LENGTH_LONG).show();
+//                    Toast.makeText(getApplicationContext(), "Logged in", Toast.LENGTH_SHORT).show();
+                    identityRepository.login(token, username, email);
+                    Handler handler = new Handler();
+                    handler.postDelayed(new Runnable()
+                    {
+                        @Override
+                        public void run()
+                        {
+                            finish();
+                        }
+                    }, FINISH_DELAY);
+                }
+                catch (Exception ex)
+                {
+                    Toast.makeText(getApplicationContext(), ex.getMessage(), Toast.LENGTH_LONG).show();
+                }
                 deactivateLoadingScreen();
             }
         });
@@ -144,6 +196,22 @@ public class LoginActivity extends AppCompatActivity
         errorMessage.setVisibility(View.GONE);
     }
 
+    private void showMessage(String message)
+    {
+        if (message != null && message.length() > 0)
+        {
+            TextView justMessage = findViewById(R.id.just_message);
+            justMessage.setVisibility(View.VISIBLE);
+            justMessage.setText(message);
+        }
+    }
+
+    private void hideMessage()
+    {
+        TextView justMessage = findViewById(R.id.just_message);
+        justMessage.setVisibility(View.GONE);
+    }
+
     private static void hideKeyboard(Activity activity)
     {
         InputMethodManager imm = (InputMethodManager) activity.getSystemService(Activity.INPUT_METHOD_SERVICE);
@@ -158,13 +226,16 @@ public class LoginActivity extends AppCompatActivity
     private void activateLoadingScreen()
     {
         hideError();
+        hideMessage();
         deactivateButtons();
+        deactivateInputs();
         showProgressCircle();
     }
 
     private void deactivateLoadingScreen()
     {
         activateButtons();
+        activateInputs();
         hideProgressCircle();
     }
 
@@ -178,6 +249,18 @@ public class LoginActivity extends AppCompatActivity
     {
         findViewById(R.id.login_sign_in_button).setEnabled(false);
         findViewById(R.id.login_register_button).setEnabled(false);
+    }
+
+    private void activateInputs()
+    {
+        findViewById(R.id.email).setEnabled(true);
+        findViewById(R.id.password).setEnabled(true);
+    }
+
+    private void deactivateInputs()
+    {
+        findViewById(R.id.email).setEnabled(false);
+        findViewById(R.id.password).setEnabled(false);
     }
 
     private void hideProgressCircle()
@@ -206,6 +289,14 @@ public class LoginActivity extends AppCompatActivity
 
         setResult(RESULT_OK, intent);
         super.finish();
+    }
+
+    private void setInitialValues(String email, String password)
+    {
+        EditText editText = findViewById(R.id.email);
+        editText.setText(email);
+        editText = findViewById(R.id.password);
+        editText.setText(password);
     }
 
     // temporary method
