@@ -30,8 +30,8 @@ import cz.msebera.android.httpclient.entity.StringEntity;
 public class LoginActivity extends AppCompatActivity
 {
     private final int REGISTRATION_RETURN = 1;
-    private final int REQUEST_SEND_DELAY = 750;
-    private final int FINISH_DELAY = 600;
+    private final int REQUEST_SEND_DELAY = 600;
+    private final int FINISH_DELAY = 250;
 
     private IIdentityRepository identityRepository = IoC.getIdentityRepository();
 
@@ -55,6 +55,7 @@ public class LoginActivity extends AppCompatActivity
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        hideError();
         if (requestCode == REGISTRATION_RETURN && resultCode == Activity.RESULT_OK)
         {
             Bundle extras = data.getExtras();
@@ -133,8 +134,7 @@ public class LoginActivity extends AppCompatActivity
             @Override
             public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable)
             {
-                Toast.makeText(getApplicationContext(), responseString, Toast.LENGTH_SHORT).show();
-                showError(responseString);
+                showError(throwable.getMessage());
                 deactivateLoadingScreen();
             }
 
@@ -146,8 +146,6 @@ public class LoginActivity extends AppCompatActivity
                     String token = jsonToken.getString("token");
                     String username = jsonToken.getString("username");
                     String email = jsonToken.getString("email");
-//                    Toast.makeText(getApplicationContext(), token + "\n" + username + "\n" + email, Toast.LENGTH_LONG).show();
-//                    Toast.makeText(getApplicationContext(), "Logged in", Toast.LENGTH_SHORT).show();
                     identityRepository.login(token, username, email);
                     Handler handler = new Handler();
                     handler.postDelayed(new Runnable()

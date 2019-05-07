@@ -11,10 +11,15 @@ import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.AdapterView;
+import android.widget.LinearLayout;
+import android.widget.ListView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.aprojectktomkow.Models.Recipe;
+import com.example.aprojectktomkow.Models.RecipesListAdapter;
 import com.example.aprojectktomkow.Providers.ApiUrl;
 import com.example.aprojectktomkow.Repositories.Token.IIdentityRepository;
 import com.example.aprojectktomkow.Repositories.Token.IoC.IoC;
@@ -28,10 +33,16 @@ import java.util.ArrayList;
 import java.util.List;
 
 import cz.msebera.android.httpclient.Header;
+import cz.msebera.android.httpclient.HeaderElement;
+import cz.msebera.android.httpclient.ParseException;
 
 public class MainActivity extends AppCompatActivity
 {
     private final int LOGIN_RETURNED = 1;
+    private final int DETAILS_RETURNED = 1;
+    private final int REQUEST_SEND_DELAY = 500;
+
+    private static final String TAG = "MainActivity";
 
     private final Fragment fragmentAccount = new AccountFragment();
     private final Fragment fragmentLoggedAccount = new LoggedAccountFragment();
@@ -84,6 +95,8 @@ public class MainActivity extends AppCompatActivity
 //        startActivity(intent);
 //        // ^^^^^^^^^^^^^^^^^^
 
+
+        // INIT START
         recipes = new ArrayList<>();
 
         BottomNavigationView navigation = findViewById(R.id.navigation);
@@ -96,33 +109,10 @@ public class MainActivity extends AppCompatActivity
         fragmentManager.beginTransaction().add(R.id.fragment_container, fragmentLoggedAccount, "5").hide(fragmentLoggedAccount).commit();
 
         fragmentManager.beginTransaction().show(getAccountFragment()).commit();
-    }
 
-    public void increment(View view)
-    {
-        TextView testTextView = findViewById(R.id.test_label);
-        testTextView.setText("clicked");
+        // INIT END
 
-        String url = ApiUrl.getUsersUrl();
-        HttpUtils.get(url, null, new JsonHttpResponseHandler()
-        {
-            @Override
-            public void onSuccess(int statusCode, Header[] headers, JSONArray timeline)
-            {
-                JSONObject firstEvent = null;
-                try
-                {
-                    firstEvent = (JSONObject) timeline.get(0);
-                    TextView testTextView = findViewById(R.id.test_label);
-                    testTextView.setText(firstEvent.toString());
-                } catch (Exception ex)
-                {
-                    ex.printStackTrace();
-                    TextView testTextView = findViewById(R.id.test_label);
-                    testTextView.setText("Connection error");
-                }
-            }
-        });
+
     }
 
     public void goToRegister(View view)
@@ -144,8 +134,10 @@ public class MainActivity extends AppCompatActivity
     }
 
     @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (requestCode == LOGIN_RETURNED && resultCode == Activity.RESULT_OK) {
+    protected void onActivityResult(int requestCode, int resultCode, Intent data)
+    {
+        if (requestCode == LOGIN_RETURNED && resultCode == Activity.RESULT_OK)
+        {
             Handler handler = new Handler();
             handler.postDelayed(new Runnable()
             {
@@ -158,114 +150,10 @@ public class MainActivity extends AppCompatActivity
         }
     }
 
-    public void getAllRecipes(View view)
-    {
-        if(identityRepository.isUserLogged())
-        {
-            getAllRecipesUserLogged();
-        }
-        else
-        {
-            getAllRecipesNonLogged();
-        }
-
-    }
-
-    private void getAllRecipesNonLogged()
-    {
-        String url = ApiUrl.getRecipesUrlNonLoggedUser();
-        HttpUtils.get(url, null, new JsonHttpResponseHandler()
-        {
-            @Override
-            public void onSuccess(int statusCode, Header[] headers, JSONObject response)
-            {
-                TextView textView = findViewById(R.id.test_label);
-                textView.setText("Json object instead of array");
-            }
-
-            @Override
-            public void onSuccess(int statusCode, Header[] headers, JSONArray timeline)
-            {
-                recipes.clear();
-                try
-                {
-                    int objectsNumber = timeline.length();
-                    StringBuilder builder = new StringBuilder();
-                    JSONObject json;
-                    String text;
-                    Recipe recipe;
-                    Gson gson = new Gson();
-                    for (int i = 0; i < objectsNumber; i++)
-                    {
-                        json = (JSONObject) timeline.get(i);
-                        recipe = gson.fromJson(json.toString(), Recipe.class);
-                        recipes.add(recipe);
-
-                        text = recipe.getName() + " " + recipe.getDescription();
-                        builder.append(text).append("\n");
-                    }
-
-                    recipe = null;
-                    TextView textView = findViewById(R.id.test_label);
-                    textView.setText(builder.toString());
-                }
-                catch (Exception e)
-                {
-                    Toast.makeText(getApplicationContext(), "Exception: " + e.getMessage(), Toast.LENGTH_LONG).show();
-                }
-            }
-        });
-    }
-
-    private void getAllRecipesUserLogged()
-    {
-        String url = ApiUrl.getRecipesUrlNonLoggedUser();
-        HttpUtils.get(url, null, new JsonHttpResponseHandler()
-        {
-            @Override
-            public void onSuccess(int statusCode, Header[] headers, JSONObject response)
-            {
-                TextView textView = findViewById(R.id.test_label);
-                textView.setText("Json object instead of array");
-            }
-
-            @Override
-            public void onSuccess(int statusCode, Header[] headers, JSONArray timeline)
-            {
-                recipes.clear();
-                try
-                {
-                    int objectsNumber = timeline.length();
-                    StringBuilder builder = new StringBuilder();
-                    JSONObject json;
-                    String text;
-                    Recipe recipe;
-                    Gson gson = new Gson();
-                    for (int i = 0; i < objectsNumber; i++)
-                    {
-                        json = (JSONObject) timeline.get(i);
-                        recipe = gson.fromJson(json.toString(), Recipe.class);
-                        recipes.add(recipe);
-
-                        text = recipe.getName() + " " + recipe.getDescription();
-                        builder.append(text).append("\n");
-                    }
-
-                    recipe = null;
-                    TextView textView = findViewById(R.id.test_label);
-                    textView.setText(builder.toString());
-                }
-                catch (Exception e)
-                {
-                    Toast.makeText(getApplicationContext(), "Exception: " + e.getMessage(), Toast.LENGTH_LONG).show();
-                }
-            }
-        });
-    }
 
     private Fragment getAccountFragment()
     {
-        if(identityRepository.isUserLogged())
+        if (identityRepository.isUserLogged())
         {
             TextView info_username = findViewById(R.id.info_username);
             TextView info_email = findViewById(R.id.info_email);
@@ -274,8 +162,7 @@ public class MainActivity extends AppCompatActivity
             info_email.setText(identityRepository.getEmail());
 
             return fragmentLoggedAccount;
-        }
-        else
+        } else
         {
             return fragmentAccount;
         }
@@ -291,5 +178,246 @@ public class MainActivity extends AppCompatActivity
     {
         identityRepository.logout();
         showAccountFragment();
+    }
+
+    // RECIPES
+    private void recipesActivateLoadingScreen()
+    {
+        recipesHideError();
+        recipesDeactivateButtons();
+        recipesShowProgressCircle();
+    }
+
+    private void recipesDeactivateLoadingScreen()
+    {
+        recipesActivateButtons();
+        resipesHideProgressCircle();
+    }
+
+    private void recipesActivateButtons()
+    {
+        findViewById(R.id.recipes_fire).setEnabled(true);
+    }
+
+    private void recipesDeactivateButtons()
+    {
+        findViewById(R.id.recipes_fire).setEnabled(false);
+    }
+
+    private void resipesHideProgressCircle()
+    {
+        recipesGetProgressCircle().setVisibility(View.GONE);
+    }
+
+    private void recipesShowProgressCircle()
+    {
+        recipesGetProgressCircle().setVisibility(View.VISIBLE);
+    }
+
+    private void recipesShowError(String error)
+    {
+        if (error != null && error.length() > 0)
+        {
+            TextView errorMessage = findViewById(R.id.recipes_error_message);
+            errorMessage.setVisibility(View.VISIBLE);
+            errorMessage.setText(error);
+        }
+    }
+
+    private void recipesHideError()
+    {
+        TextView errorMessage = findViewById(R.id.recipes_error_message);
+        errorMessage.setVisibility(View.GONE);
+    }
+
+    private ProgressBar recipesGetProgressCircle()
+    {
+        ProgressBar progressCircle = findViewById(R.id.recipes_progress_circle);
+        return progressCircle;
+    }
+
+    public void getAllRecipes(View view)
+    {
+        recipesHideError();
+        recipesActivateLoadingScreen();
+        recipesClearContent();
+
+        Handler handler = new Handler();
+        handler.postDelayed(new Runnable()
+        {
+            @Override
+            public void run()
+            {
+                if (identityRepository.isUserLogged())
+                {
+                    getAllRecipesUserLogged();
+                } else
+                {
+                    getAllRecipesNonLogged();
+                }
+            }
+        }, REQUEST_SEND_DELAY);
+
+    }
+
+    private void getAllRecipesNonLogged()
+    {
+        String url = ApiUrl.getRecipesUrlNonLoggedUser();
+        HttpUtils.get(url, null, new JsonHttpResponseHandler()
+        {
+            @Override
+            public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable)
+            {
+                recipesShowError(throwable.getMessage());
+                recipesDeactivateLoadingScreen();
+            }
+
+            @Override
+            public void onSuccess(int statusCode, Header[] headers, JSONObject response)
+            {
+                recipesShowError("Json object instead of array");
+                recipesDeactivateLoadingScreen();
+            }
+
+            @Override
+            public void onSuccess(int statusCode, Header[] headers, JSONArray timeline)
+            {
+                recipes.clear();
+                try
+                {
+                    int objectsNumber = timeline.length();
+                    StringBuilder builder = new StringBuilder();
+                    JSONObject json;
+                    String text;
+                    Recipe recipe;
+                    Gson gson = new Gson();
+                    for (int i = 0; i < objectsNumber; i++)
+                    {
+                        json = (JSONObject) timeline.get(i);
+                        recipe = gson.fromJson(json.toString(), Recipe.class);
+                        recipes.add(recipe);
+
+                        text = recipe.getName() + " " + recipe.getDescription();
+                        builder.append(text).append("\n");
+                    }
+                    recipesShowContent();
+                    recipe = null;
+
+                } catch (Exception e)
+                {
+                    Toast.makeText(getApplicationContext(), "Exception: " + e.getMessage(), Toast.LENGTH_LONG).show();
+                } finally
+                {
+                    recipesDeactivateLoadingScreen();
+                }
+            }
+        });
+    }
+
+    private void getAllRecipesUserLogged()
+    {
+        String url = ApiUrl.getRecipesUrlLoggedUser();
+        HttpUtils.attachToken(identityRepository.getToken());
+        HttpUtils.get(url, null, new JsonHttpResponseHandler()
+        {
+            @Override
+            public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable)
+            {
+                recipesShowError(throwable.getMessage());
+                recipesDeactivateLoadingScreen();
+            }
+
+            @Override
+            public void onSuccess(int statusCode, Header[] headers, JSONObject response)
+            {
+                recipesShowError("Json object instead of array");
+                recipesDeactivateLoadingScreen();
+            }
+
+            @Override
+            public void onSuccess(int statusCode, Header[] headers, JSONArray timeline)
+            {
+                recipes.clear();
+                try
+                {
+                    int objectsNumber = timeline.length();
+                    StringBuilder builder = new StringBuilder();
+                    JSONObject json;
+                    String text;
+                    Recipe recipe;
+                    Gson gson = new Gson();
+                    for (int i = 0; i < objectsNumber; i++)
+                    {
+                        json = (JSONObject) timeline.get(i);
+                        recipe = gson.fromJson(json.toString(), Recipe.class);
+                        recipes.add(recipe);
+
+                        text = recipe.getName() + " " + recipe.getDescription();
+                        builder.append(text).append("\n");
+                    }
+
+                    recipe = null;
+                    recipesShowContent();
+                } catch (Exception e)
+                {
+                    Toast.makeText(getApplicationContext(), "Exception: " + e.getMessage(), Toast.LENGTH_LONG).show();
+                    recipesShowError("Exception: " + e.getMessage());
+                } finally
+                {
+                    recipesDeactivateLoadingScreen();
+                }
+            }
+        });
+    }
+
+    private void recipesShowContent()
+    {
+        recipesGetListView().setAdapter(recipesGetAdapter());
+        recipesGetListView().setOnItemClickListener(new AdapterView.OnItemClickListener()
+        {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id)
+            {
+                // Get the selected item text from ListView
+//                Recipe selectedItem = (Recipe) parent.getItemAtPosition(position);
+                Recipe recipe = recipes.get((int) id);
+                goToDetails(recipe);
+            }
+        });
+    }
+
+    private void goToDetails(Recipe recipe)
+    {
+        Intent intent = new Intent(this, DetailsActivity.class);
+
+        Bundle b = new Bundle();
+        b.putString("name", recipe.getName());
+        b.putString("description", recipe.getDescription());
+        b.putString("shortDescription", recipe.getShortDescription());
+        b.putString("imageUrl", recipe.getMainImageUrl());
+        b.putInt("neededTime", recipe.getNeededTimeMinutes());
+        b.putString("lastModification", recipe.getDateOfLastModification().toString());
+        b.putBoolean("isPrivate", recipe.isPrivate());
+
+        intent.putExtras(b);
+
+        startActivityForResult(intent, DETAILS_RETURNED);
+    }
+
+    private void recipesClearContent()
+    {
+        recipesGetListView().setAdapter(null);
+    }
+
+    // Recipes adapter
+    private ListView recipesGetListView()
+    {
+        return findViewById(R.id.recipes_list_view);
+    }
+
+    private RecipesListAdapter recipesGetAdapter()
+    {
+        RecipesListAdapter adapter = new RecipesListAdapter(this, R.layout.recipe_adapter_layout, recipes);
+        return adapter;
     }
 }

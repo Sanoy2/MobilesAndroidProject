@@ -134,7 +134,8 @@
             android:id="@+id/create_recipe_button"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@string/create_recipe_button" />
+            android:text="@string/create_recipe_button"
+            android:onClick="sendNewRecipe"/>
     </LinearLayout>
 
 </RelativeLayout>

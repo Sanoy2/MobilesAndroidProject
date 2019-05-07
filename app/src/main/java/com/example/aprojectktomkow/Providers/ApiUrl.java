@@ -28,13 +28,11 @@ public class ApiUrl
     {
         return apiUrl + "recipes";
     }
+
     public static String getRecipesUrlLoggedUser()
     {
         return apiUrl + "recipes/loggeduser";
     }
 
-    public static String getCheckTokenUrl()
-    {
-        return apiUrl + "/test/checkIfLogged";
-    }
+    public static String getRecipesUrlCreate() { return apiUrl + "recipes"; }
 }

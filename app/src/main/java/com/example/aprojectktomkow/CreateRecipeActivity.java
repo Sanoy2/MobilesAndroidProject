@@ -9,6 +9,7 @@ import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Environment;
+import android.os.Handler;
 import android.provider.MediaStore;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
@@ -18,26 +19,46 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewTreeObserver;
+import android.widget.CheckBox;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.aprojectktomkow.Models.Forms.IValidatorResult;
+import com.example.aprojectktomkow.Models.Forms.Recipe.NewRecipeCommand;
+import com.example.aprojectktomkow.Models.Forms.Recipe.NewRecipeForm;
+import com.example.aprojectktomkow.Providers.ApiUrl;
+import com.example.aprojectktomkow.Repositories.Token.IIdentityRepository;
+import com.example.aprojectktomkow.Repositories.Token.IoC.IoC;
+import com.loopj.android.http.AsyncHttpClient;
+import com.loopj.android.http.TextHttpResponseHandler;
+
 import net.yslibrary.android.keyboardvisibilityevent.KeyboardVisibilityEvent;
 import net.yslibrary.android.keyboardvisibilityevent.KeyboardVisibilityEventListener;
+
+import org.json.JSONObject;
 
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.UnsupportedEncodingException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+
+import cz.msebera.android.httpclient.Header;
+import cz.msebera.android.httpclient.entity.StringEntity;
 
 public class CreateRecipeActivity extends AppCompatActivity
 {
     static final int REQUEST_IMAGE_GET = 1;
+    static final int REQUEST_SEND_DELAY = 500;
 
     private static final int READ_EXTERNAL_STORAGE_RESP = 2;
+
+    IIdentityRepository identityRepository = IoC.getIdentityRepository();
 
     String currentPhotoPath;
 
@@ -223,8 +244,144 @@ public class CreateRecipeActivity extends AppCompatActivity
         return progressCircle;
     }
 
-    private void showToast(String content)
+    public void sendNewRecipe(View view)
     {
-        Toast.makeText(getApplicationContext(), content, Toast.LENGTH_LONG).show();
+        activateLoadingScreen();
+        deactivateButtons();
+        hideError();
+
+        Handler handler = new Handler();
+        handler.postDelayed(new Runnable()
+        {
+            @Override
+            public void run()
+            {
+                sendNewRecipe();
+            }
+        }, REQUEST_SEND_DELAY);
+    }
+
+    private void sendNewRecipe()
+    {
+        NewRecipeForm form = getRecipeForm();
+
+        IValidatorResult formValidationResult = form.Validate();
+        if(identityRepository.isUserLogged())
+        {
+            if (formValidationResult.isValid())
+            {
+                NewRecipeCommand command = new NewRecipeCommand(form);
+                sendNewRecipeCommand(command);
+            } else
+            {
+                deactivateLoadingScreen();
+                showError(formValidationResult.errorMessage());
+            }
+        }
+        else
+        {
+            showError("User must be logged in to send recipe");
+            deactivateLoadingScreen();
+            activateButtons();
+        }
+    }
+
+    private void sendNewRecipeCommand(NewRecipeCommand command)
+    {
+        String url = ApiUrl.getRecipesUrlCreate();
+        HttpUtils.attachToken(identityRepository.getToken());
+
+        final JSONObject jsonParams = new JSONObject(command.toHashMap());
+        StringEntity entity = null;
+        try
+        {
+            entity = new StringEntity(jsonParams.toString());
+        } catch (UnsupportedEncodingException e)
+        {
+            e.printStackTrace();
+        }
+
+        HttpUtils.attachToken(identityRepository.getToken());
+//        HttpUtils.post(getApplicationContext(), url, entity, "application/json", new TextHttpResponseHandler()
+        AsyncHttpClient client = new AsyncHttpClient();
+        client.addHeader("Authorization", String.format("Bearer %s", identityRepository.getToken()));
+        client.post(getApplicationContext(), url, entity, "application/json", new TextHttpResponseHandler()
+        {
+            @Override
+            public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable)
+            {
+                showError(throwable.getMessage());
+                deactivateLoadingScreen();
+                activateButtons();
+            }
+
+            @Override
+            public void onSuccess(int statusCode, Header[] headers, String responseString)
+            {
+                Toast.makeText(getApplicationContext(), "Recipe successfully created :)", Toast.LENGTH_LONG).show();
+                deactivateLoadingScreen();
+                activateButtons();
+                finish();
+            }
+        });
+    }
+
+    private NewRecipeForm getRecipeForm()
+    {
+        NewRecipeForm form = new NewRecipeForm();
+        form.setName(getName());
+        form.setShortDescription(getShortDescription());
+        form.setDescription(getDescription());
+        form.setNeededTimeMinutes(getNeededTime());
+        form.setImageUrl(getImageUrl());
+        form.setPrivate(getIsPrivate());
+
+        return form;
+    }
+
+    private String getNeededTime()
+    {
+        EditText editText = findViewById(R.id.recipe_time);
+        return editText.getText().toString();
+    }
+
+    private String getName()
+    {
+        EditText editText = findViewById(R.id.recipe_title);
+        return editText.getText().toString();
+    }
+
+    private String getShortDescription()
+    {
+        EditText editText = findViewById(R.id.recipe_short_description);
+        return editText.getText().toString();
+    }
+
+    private String getDescription()
+    {
+        EditText editText = findViewById(R.id.recipe_description);
+        return editText.getText().toString();
+    }
+
+    private String getImageUrl()
+    {
+        return "none";
+    }
+
+    private boolean getIsPrivate()
+    {
+        CheckBox checkBox = findViewById(R.id.private_recipe);
+        return checkBox.isChecked();
+    }
+
+    @Override
+    public void finish()
+    {
+        Intent intent = new Intent();
+
+//        intent.putExtra("result", "some result body");
+
+        setResult(RESULT_OK, intent);
+        super.finish();
     }
 }
