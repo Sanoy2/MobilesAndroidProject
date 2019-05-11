@@ -31,7 +31,6 @@ import com.google.gson.Gson;
 import com.loopj.android.http.AsyncHttpClient;
 import com.loopj.android.http.FileAsyncHttpResponseHandler;
 import com.loopj.android.http.JsonHttpResponseHandler;
-import com.loopj.android.image.SmartImageView;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -607,8 +606,8 @@ public class MainActivity extends AppCompatActivity
     public void getImage(View view)
     {
         String url = ApiUrl.getImagesUrlCreate() + "hamburger";
-        AsyncHttpClient client = new AsyncHttpClient();
-        client.get(url, null, new FileAsyncHttpResponseHandler(getApplicationContext())
+
+        HttpUtils.get(url, null, new FileAsyncHttpResponseHandler(getApplicationContext())
         {
             @Override
             public void onFailure(int statusCode, Header[] headers, Throwable throwable, File file)
