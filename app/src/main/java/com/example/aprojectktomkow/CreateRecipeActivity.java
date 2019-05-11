@@ -7,6 +7,7 @@ import android.content.pm.PackageManager;
 import android.content.res.Configuration;
 import android.database.Cursor;
 import android.graphics.Bitmap;
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Environment;
 import android.os.Handler;
@@ -34,6 +35,7 @@ import com.example.aprojectktomkow.Providers.ApiUrl;
 import com.example.aprojectktomkow.Repositories.Token.IIdentityRepository;
 import com.example.aprojectktomkow.Repositories.Token.IoC.IoC;
 import com.loopj.android.http.AsyncHttpClient;
+import com.loopj.android.http.RequestParams;
 import com.loopj.android.http.TextHttpResponseHandler;
 
 import net.yslibrary.android.keyboardvisibilityevent.KeyboardVisibilityEvent;
@@ -42,6 +44,7 @@ import net.yslibrary.android.keyboardvisibilityevent.KeyboardVisibilityEventList
 import org.json.JSONObject;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
@@ -55,6 +58,8 @@ public class CreateRecipeActivity extends AppCompatActivity
 {
     static final int REQUEST_IMAGE_GET = 1;
     static final int REQUEST_SEND_DELAY = 500;
+
+    File selectedFile = null;
 
     private static final int READ_EXTERNAL_STORAGE_RESP = 2;
 
@@ -129,11 +134,13 @@ public class CreateRecipeActivity extends AppCompatActivity
         startActivityForResult(Intent.createChooser(intent, "Select Picture"), REQUEST_IMAGE_GET);
     }
 
-    public String getPathFromURI(Uri contentUri) {
+    public String getPathFromURI(Uri contentUri)
+    {
         String res = null;
         String[] proj = {MediaStore.Images.Media.DATA};
         Cursor cursor = getContentResolver().query(contentUri, proj, null, null, null);
-        if (cursor.moveToFirst()) {
+        if (cursor.moveToFirst())
+        {
             int column_index = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
             res = cursor.getString(column_index);
         }
@@ -142,16 +149,23 @@ public class CreateRecipeActivity extends AppCompatActivity
     }
 
     @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+    protected void onActivityResult(int requestCode, int resultCode, Intent data)
+    {
         super.onActivityResult(requestCode, resultCode, data);
-        try {
-            if (resultCode == RESULT_OK) {
-                if (requestCode == REQUEST_IMAGE_GET) {
+        try
+        {
+            if (resultCode == RESULT_OK)
+            {
+                if (requestCode == REQUEST_IMAGE_GET)
+                {
                     Uri selectedImageUri = data.getData();
                     // Get the path from the Uri
                     final String path = getPathFromURI(selectedImageUri);
-                    if (path != null) {
+                    currentPhotoPath = path;
+                    if (path != null)
+                    {
                         File f = new File(path);
+                        selectedFile = f;
                         selectedImageUri = Uri.fromFile(f);
                     }
                     // Set the image in ImageView
@@ -160,11 +174,11 @@ public class CreateRecipeActivity extends AppCompatActivity
                     iv.setImageURI(selectedImageUri);
                 }
             }
-        } catch (Exception e) {
+        } catch (Exception e)
+        {
             Log.e("FileSelectorActivity", "File select error", e);
         }
     }
-
 
 
     private boolean checkIfPermissionGranted(String permission)
@@ -266,7 +280,7 @@ public class CreateRecipeActivity extends AppCompatActivity
         NewRecipeForm form = getRecipeForm();
 
         IValidatorResult formValidationResult = form.Validate();
-        if(identityRepository.isUserLogged())
+        if (identityRepository.isUserLogged())
         {
             if (formValidationResult.isValid())
             {
@@ -277,13 +291,66 @@ public class CreateRecipeActivity extends AppCompatActivity
                 deactivateLoadingScreen();
                 showError(formValidationResult.errorMessage());
             }
-        }
-        else
+        } else
         {
             showError("User must be logged in to send recipe");
             deactivateLoadingScreen();
             activateButtons();
         }
+    }
+
+    public void sendImage(View view)
+    {
+        sendImage();
+    }
+
+    private void sendImage()
+    {
+        String url = ApiUrl.getImagesUrlCreate();
+        Uri selectedImageUri = Uri.fromFile(selectedFile);
+        RequestParams params = new RequestParams();
+
+        File image = new File(currentPhotoPath);
+
+        if(image == null)
+        {
+            Toast.makeText(getApplicationContext(),"Here is the problem!",Toast.LENGTH_LONG).show();
+        }
+        try
+        {
+            params.put("file", image, "image/jpeg");
+
+        } catch (Exception e)
+        {
+            Toast.makeText(getApplicationContext(), e.getMessage(), Toast.LENGTH_LONG).show();
+            return;
+        }
+
+        HttpUtils.attachToken(identityRepository.getToken());
+        HttpUtils.post(url, params, new TextHttpResponseHandler()
+        {
+            @Override
+            public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable)
+            {
+//                showError(throwable.getMessage());
+//                deactivateLoadingScreen();
+//                activateButtons();
+                Log.i("image", responseString);
+                Log.i("image", throwable.getMessage());
+                Toast.makeText(getApplicationContext(), responseString, Toast.LENGTH_SHORT).show();
+                Toast.makeText(getApplicationContext(), throwable.toString(), Toast.LENGTH_LONG).show();
+            }
+
+            @Override
+            public void onSuccess(int statusCode, Header[] headers, String responseString)
+            {
+                Toast.makeText(getApplicationContext(), "success", Toast.LENGTH_SHORT).show();
+//                Toast.makeText(getApplicationContext(), "Recipe successfully created :)", Toast.LENGTH_LONG).show();
+//                deactivateLoadingScreen();
+//                activateButtons();
+//                finish();
+            }
+        });
     }
 
     private void sendNewRecipeCommand(NewRecipeCommand command)
@@ -375,9 +442,6 @@ public class CreateRecipeActivity extends AppCompatActivity
     public void finish()
     {
         Intent intent = new Intent();
-
-//        intent.putExtra("result", "some result body");
-
         setResult(RESULT_OK, intent);
         super.finish();
     }

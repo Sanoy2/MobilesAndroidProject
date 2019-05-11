@@ -552,7 +552,7 @@ public class MainActivity extends AppCompatActivity
                         text = recipe.getName() + " " + recipe.getDescription();
                         builder.append(text).append("\n");
                     }
-                    Toast.makeText(getApplicationContext(), String.valueOf(objectsNumber), Toast.LENGTH_LONG).show();
+//                    Toast.makeText(getApplicationContext(), String.valueOf(objectsNumber), Toast.LENGTH_LONG).show();
                     recipe = null;
                     my_recipesShowContent();
                 } catch (Exception e)

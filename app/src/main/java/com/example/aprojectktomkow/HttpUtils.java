@@ -38,6 +38,7 @@ public class HttpUtils {
 
     public static void attachToken(String token)
     {
+        client.removeAllHeaders();
         client.addHeader("Authorization", String.format("Bearer %s", token));
     }
 
