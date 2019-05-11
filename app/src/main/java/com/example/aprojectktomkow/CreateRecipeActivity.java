@@ -302,10 +302,7 @@ public class CreateRecipeActivity extends AppCompatActivity
         }
 
         HttpUtils.attachToken(identityRepository.getToken());
-//        HttpUtils.post(getApplicationContext(), url, entity, "application/json", new TextHttpResponseHandler()
-        AsyncHttpClient client = new AsyncHttpClient();
-        client.addHeader("Authorization", String.format("Bearer %s", identityRepository.getToken()));
-        client.post(getApplicationContext(), url, entity, "application/json", new TextHttpResponseHandler()
+        HttpUtils.post(getApplicationContext(), url, entity, "application/json", new TextHttpResponseHandler()
         {
             @Override
             public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable)
