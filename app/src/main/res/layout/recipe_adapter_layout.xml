@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical">
@@ -9,14 +8,14 @@
         android:id="@+id/recipe_adapter_title"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:textSize="25dp"
         android:text="sample title"
-        android:textStyle="bold"/>
+        android:textSize="25dp"
+        android:textStyle="bold" />
 
-<TextView
-    android:id="@+id/recipe_adapter_short_description"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:textSize="15dp"
-    android:text="sample short description"/>
+    <TextView
+        android:id="@+id/recipe_adapter_short_description"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:text="sample short description"
+        android:textSize="15dp" />
 </LinearLayout>

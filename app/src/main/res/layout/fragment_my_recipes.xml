@@ -20,7 +20,6 @@
         android:layout_height="match_parent"
         android:layout_above="@+id/my_recipes_bottom_layout"
         android:layout_below="@+id/my_recipes_title_text_view">
-
     </ListView>
 
     <LinearLayout

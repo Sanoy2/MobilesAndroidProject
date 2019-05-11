@@ -14,14 +14,16 @@
         android:textSize="30dp"
         android:textStyle="bold"/>
 
-    <ListView
-        android:id="@+id/recipes_list_view"
+    <GridView
+        android:id="@+id/recipes_grid_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_above="@+id/recipes_bottom_layout"
-        android:layout_below="@+id/recipes_title_text_view">
-
-    </ListView>
+        android:layout_below="@+id/recipes_title_text_view"
+        android:horizontalSpacing="10dp"
+        android:numColumns="auto_fit"
+        android:verticalSpacing="20dp">
+    </GridView>
 
     <LinearLayout
         android:id="@+id/recipes_bottom_layout"
