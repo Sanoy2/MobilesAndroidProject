@@ -2,6 +2,9 @@ package com.example.aprojectktomkow;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.NonNull;
@@ -12,6 +15,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.ProgressBar;
@@ -24,11 +28,15 @@ import com.example.aprojectktomkow.Providers.ApiUrl;
 import com.example.aprojectktomkow.Repositories.Token.IIdentityRepository;
 import com.example.aprojectktomkow.Repositories.Token.IoC.IoC;
 import com.google.gson.Gson;
+import com.loopj.android.http.AsyncHttpClient;
+import com.loopj.android.http.FileAsyncHttpResponseHandler;
 import com.loopj.android.http.JsonHttpResponseHandler;
+import com.loopj.android.image.SmartImageView;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -175,12 +183,11 @@ public class MainActivity extends AppCompatActivity
 
     private void showMyRecipesFragment()
     {
-        if(identityRepository.isUserLogged())
+        if (identityRepository.isUserLogged())
         {
             fragmentManager.beginTransaction().hide(activeFragment).show(fragmentMyRecipes).commit();
             activeFragment = fragmentMyRecipes;
-        }
-        else
+        } else
         {
             showAccountFragment();
         }
@@ -597,4 +604,25 @@ public class MainActivity extends AppCompatActivity
         return adapter;
     }
 
+    public void getImage(View view)
+    {
+        String url = ApiUrl.getImagesUrlCreate() + "hamburger";
+        AsyncHttpClient client = new AsyncHttpClient();
+        client.get(url, null, new FileAsyncHttpResponseHandler(getApplicationContext())
+        {
+            @Override
+            public void onFailure(int statusCode, Header[] headers, Throwable throwable, File file)
+            {
+                Toast.makeText(getApplicationContext(), "fail", Toast.LENGTH_LONG).show();
+            }
+
+            @Override
+            public void onSuccess(int statusCode, Header[] headers, File response)
+            {
+                Bitmap bMap = BitmapFactory.decodeFile(file.getAbsolutePath());
+                ImageView image = findViewById(R.id.my_image_2);
+                image.setImageBitmap(bMap);
+            }
+        });
+    }
 }

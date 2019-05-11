@@ -37,4 +37,6 @@ public class ApiUrl
     public static String getRecipesUrlOnlyMyRecipes() { return apiUrl + "recipes/my"; }
 
     public static String getRecipesUrlCreate() { return apiUrl + "recipes"; }
+
+    public static String getImagesUrlCreate() { return apiUrl + "images/"; }
 }

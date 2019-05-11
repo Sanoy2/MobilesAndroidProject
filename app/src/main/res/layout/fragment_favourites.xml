@@ -5,10 +5,39 @@
     android:background="@android:color/holo_blue_light">
 
     <TextView
+        android:id="@+id/text"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Favourites fragment"
         android:textSize="30dp"
-        android:layout_centerInParent="true"/>
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"/>
+    <Button
+        android:id="@+id/fire_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/text"
+        android:layout_centerHorizontal="true"
+        android:text="fire"
+        android:textSize="30dp"
+        android:onClick="getImage"/>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/fire_button"
+        android:layout_centerHorizontal="true"
+        android:orientation="vertical">
+        <com.loopj.android.image.SmartImageView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/my_image" />
+        <ImageView
+            android:id="@+id/my_image_2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:minHeight="200dp"
+            android:minWidth="200dp"
+            android:layout_gravity="center_horizontal|center_vertical"/>
+    </LinearLayout>
 
 </RelativeLayout>
