@@ -37,6 +37,7 @@ import com.example.aprojectktomkow.Providers.ImageCompressor;
 import com.example.aprojectktomkow.Repositories.Token.IIdentityRepository;
 import com.example.aprojectktomkow.Repositories.Token.IoC.IoC;
 import com.loopj.android.http.AsyncHttpClient;
+import com.loopj.android.http.JsonHttpResponseHandler;
 import com.loopj.android.http.RequestParams;
 import com.loopj.android.http.TextHttpResponseHandler;
 
@@ -61,13 +62,12 @@ public class CreateRecipeActivity extends AppCompatActivity
     static final int REQUEST_IMAGE_GET = 1;
     static final int REQUEST_SEND_DELAY = 500;
 
-    File selectedFile = null;
-
     private static final int READ_EXTERNAL_STORAGE_RESP = 2;
 
     IIdentityRepository identityRepository = IoC.getIdentityRepository();
 
     String currentPhotoPath;
+    String uploadedPhotoId;
 
     private LinearLayout bottomLayout;
 
@@ -167,11 +167,9 @@ public class CreateRecipeActivity extends AppCompatActivity
                     if (path != null)
                     {
                         File f = new File(path);
-                        selectedFile = f;
                         selectedImageUri = Uri.fromFile(f);
                     }
                     // Set the image in ImageView
-//                    ImageView((ImageView) findViewById(R.id.imgView)).setImageURI(selectedImageUri);
                     ImageView iv = findViewById(R.id.picture);
                     iv.setImageURI(selectedImageUri);
                 }
@@ -260,6 +258,11 @@ public class CreateRecipeActivity extends AppCompatActivity
         return progressCircle;
     }
 
+    private void httpSuccess()
+    {
+
+    }
+
     public void sendNewRecipe(View view)
     {
         activateLoadingScreen();
@@ -267,14 +270,28 @@ public class CreateRecipeActivity extends AppCompatActivity
         hideError();
 
         Handler handler = new Handler();
-        handler.postDelayed(new Runnable()
+        if (currentPhotoPath != null && !currentPhotoPath.isEmpty())
         {
-            @Override
-            public void run()
+            handler.postDelayed(new Runnable()
             {
-                sendNewRecipe();
-            }
-        }, REQUEST_SEND_DELAY);
+                @Override
+                public void run()
+                {
+                    sendImage();
+                }
+            }, REQUEST_SEND_DELAY);
+        } else
+        {
+            handler.postDelayed(new Runnable()
+            {
+                @Override
+                public void run()
+                {
+                    sendNewRecipe();
+                }
+            }, REQUEST_SEND_DELAY);
+        }
+
     }
 
     private void sendNewRecipe()
@@ -301,15 +318,9 @@ public class CreateRecipeActivity extends AppCompatActivity
         }
     }
 
-    public void sendImage(View view)
-    {
-        sendImage();
-    }
-
     private void sendImage()
     {
         String url = ApiUrl.getImagesUrlCreate();
-        Uri selectedImageUri = Uri.fromFile(selectedFile);
         RequestParams params = new RequestParams();
 
         ImageCompressor compressor = new ImageCompressor();
@@ -332,23 +343,19 @@ public class CreateRecipeActivity extends AppCompatActivity
             @Override
             public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable)
             {
-//                showError(throwable.getMessage());
-//                deactivateLoadingScreen();
-//                activateButtons();
+                showError(throwable.getMessage() + throwable.toString());
                 Log.i("image", responseString);
                 Log.i("image", throwable.getMessage());
                 Toast.makeText(getApplicationContext(), responseString, Toast.LENGTH_SHORT).show();
                 Toast.makeText(getApplicationContext(), throwable.toString(), Toast.LENGTH_LONG).show();
+                sendNewRecipe();
             }
 
             @Override
             public void onSuccess(int statusCode, Header[] headers, String responseString)
             {
-                Toast.makeText(getApplicationContext(), "success", Toast.LENGTH_SHORT).show();
-//                Toast.makeText(getApplicationContext(), "Recipe successfully created :)", Toast.LENGTH_LONG).show();
-//                deactivateLoadingScreen();
-//                activateButtons();
-//                finish();
+                uploadedPhotoId = responseString;
+                sendNewRecipe();
             }
         });
     }
@@ -429,7 +436,13 @@ public class CreateRecipeActivity extends AppCompatActivity
 
     private String getImageUrl()
     {
-        return "none";
+        if (uploadedPhotoId != null && !uploadedPhotoId.isEmpty())
+        {
+            return uploadedPhotoId;
+        } else
+        {
+            return "";
+        }
     }
 
     private boolean getIsPrivate()
