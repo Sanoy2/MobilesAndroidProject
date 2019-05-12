@@ -21,6 +21,11 @@ public class NewRecipeCommand
         imageUrl = recipeForm.getImageUrl();
     }
 
+    public String getImageUrl()
+    {
+        return imageUrl;
+    }
+
     public HashMap<String, String> toHashMap()
     {
         HashMap<String, String> map = new HashMap<String, String>();
@@ -30,7 +35,7 @@ public class NewRecipeCommand
         map.put("neededTimeMinutes", neededTimeMinutes);
         String isPrivateString = String.valueOf(isPrivate);
         map.put("isPrivate", isPrivateString);
-        map.put("imageUrl", imageUrl);
+        map.put("mainImageUrl", imageUrl);
         return map;
     }
 }
