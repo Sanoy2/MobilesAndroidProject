@@ -21,6 +21,8 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.aprojectktomkow.DB.Note;
+import com.example.aprojectktomkow.DB.NoteDAO;
 import com.example.aprojectktomkow.Models.Recipe;
 import com.example.aprojectktomkow.Models.RecipesListAdapter;
 import com.example.aprojectktomkow.Providers.ApiUrl;
@@ -32,10 +34,15 @@ import com.loopj.android.http.JsonHttpResponseHandler;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
+import org.w3c.dom.Text;
 
 import java.io.File;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
+import java.util.Random;
 
 import cz.msebera.android.httpclient.Header;
 
@@ -59,6 +66,8 @@ public class MainActivity extends AppCompatActivity
     private List<Recipe> recipes;
     private List<Recipe> my_recipes;
     IIdentityRepository identityRepository = IoC.getIdentityRepository();
+
+    private NoteDAO noteDAO;
 
     private BottomNavigationView.OnNavigationItemSelectedListener navSelectedItemListener
             = new BottomNavigationView.OnNavigationItemSelectedListener()
@@ -92,6 +101,7 @@ public class MainActivity extends AppCompatActivity
         }
     };
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
@@ -114,6 +124,8 @@ public class MainActivity extends AppCompatActivity
         fragmentManager.beginTransaction().show(getAccountFragment()).commit();
 
         // INIT END
+
+        noteDAO = new NoteDAO(this);
     }
 
     public void goToRegister(View view)
@@ -611,25 +623,35 @@ public class MainActivity extends AppCompatActivity
         return adapter;
     }
 
-    public void getImage(View view)
+    // Favourites
+    public void showNotes(View view)
     {
-        String url = ApiUrl.getImagesUrlCreate() + "hamburger";
+        List<Note> allNotes = noteDAO.getAllNotes();
 
-        HttpUtils.get(url, null, new FileAsyncHttpResponseHandler(getApplicationContext())
+        StringBuilder sb = new StringBuilder();
+
+        for (Note note: allNotes)
         {
-            @Override
-            public void onFailure(int statusCode, Header[] headers, Throwable throwable, File file)
-            {
-                Toast.makeText(getApplicationContext(), "fail", Toast.LENGTH_LONG).show();
-            }
+            sb.append(note.toString());
+            sb.append("\n");
+        }
 
-            @Override
-            public void onSuccess(int statusCode, Header[] headers, File response)
-            {
-                Bitmap bMap = BitmapFactory.decodeFile(file.getAbsolutePath());
-                ImageView image = findViewById(R.id.my_image_2);
-                image.setImageBitmap(bMap);
-            }
-        });
+        TextView tv = findViewById(R.id.notes_content);
+        tv.setText(sb.toString());
+    }
+
+    public void addNote(View view)
+    {
+        DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
+        Date date = new Date();
+
+        Random rand = new Random();
+        int id = rand.nextInt(100000);
+
+        Note note = new Note();
+        note.setNoteText(date.toString());
+        note.setId(id);
+
+        noteDAO.insertNote(note);
     }
 }
