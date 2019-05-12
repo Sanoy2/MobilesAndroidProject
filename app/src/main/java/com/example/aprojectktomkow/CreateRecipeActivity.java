@@ -8,6 +8,7 @@ import android.content.res.Configuration;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
+import android.media.Image;
 import android.net.Uri;
 import android.os.Environment;
 import android.os.Handler;
@@ -32,6 +33,7 @@ import com.example.aprojectktomkow.Models.Forms.IValidatorResult;
 import com.example.aprojectktomkow.Models.Forms.Recipe.NewRecipeCommand;
 import com.example.aprojectktomkow.Models.Forms.Recipe.NewRecipeForm;
 import com.example.aprojectktomkow.Providers.ApiUrl;
+import com.example.aprojectktomkow.Providers.ImageCompressor;
 import com.example.aprojectktomkow.Repositories.Token.IIdentityRepository;
 import com.example.aprojectktomkow.Repositories.Token.IoC.IoC;
 import com.loopj.android.http.AsyncHttpClient;
@@ -310,16 +312,14 @@ public class CreateRecipeActivity extends AppCompatActivity
         Uri selectedImageUri = Uri.fromFile(selectedFile);
         RequestParams params = new RequestParams();
 
-        File image = new File(currentPhotoPath);
+        ImageCompressor compressor = new ImageCompressor();
 
-        if(image == null)
-        {
-            Toast.makeText(getApplicationContext(),"Here is the problem!",Toast.LENGTH_LONG).show();
-        }
+        File uncompressedImage = new File(currentPhotoPath);
+        File compressedImage = compressor.Compress(uncompressedImage);
+
         try
         {
-            params.put("file", image, "image/jpeg");
-
+            params.put("file", compressedImage, "image/jpeg");
         } catch (Exception e)
         {
             Toast.makeText(getApplicationContext(), e.getMessage(), Toast.LENGTH_LONG).show();
