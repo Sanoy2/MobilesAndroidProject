@@ -58,12 +58,10 @@ public class DetailsActivity extends AppCompatActivity
     {
        if(imageUrl != null && !imageUrl.isEmpty())
        {
-           Toast.makeText(getApplicationContext(), imageUrl, Toast.LENGTH_LONG).show();
            setImage(imageUrl);
        }
        else
        {
-           Toast.makeText(getApplicationContext(), "null or empty", Toast.LENGTH_LONG).show();
            return;
        }
     }
@@ -102,8 +100,6 @@ public class DetailsActivity extends AppCompatActivity
 
     private void setImage(String imageId)
     {
-        Toast.makeText(getApplicationContext(), "RUN", Toast.LENGTH_LONG).show();
-
         String url = ApiUrl.getImagesUrlCreate() + imageId;
 
         HttpUtils.get(url, null, new FileAsyncHttpResponseHandler(getApplicationContext())
