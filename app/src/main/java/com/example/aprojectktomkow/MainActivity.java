@@ -46,6 +46,7 @@ public class MainActivity extends AppCompatActivity
     private final int REQUEST_SEND_DELAY = 500;
 
     private static final String TAG = "MainActivity";
+    boolean goBackToMyRecipes = false;
 
     private final Fragment fragmentAccount = new AccountFragment();
     private final Fragment fragmentLoggedAccount = new LoggedAccountFragment();
@@ -70,17 +71,21 @@ public class MainActivity extends AppCompatActivity
             {
                 case R.id.navigation_account:
                     showAccountFragment();
+                    goBackToMyRecipes = false;
                     break;
                 case R.id.navigation_recipes:
                     fragmentManager.beginTransaction().hide(activeFragment).show(fragmentRecipes).commit();
                     activeFragment = fragmentRecipes;
+                    goBackToMyRecipes = false;
                     break;
                 case R.id.navigation_my_recipes:
                     showMyRecipesFragment();
+                    goBackToMyRecipes = true;
                     break;
                 case R.id.navigation_favourites:
                     fragmentManager.beginTransaction().hide(activeFragment).show(fragmentFavourites).commit();
                     activeFragment = fragmentFavourites;
+                    goBackToMyRecipes = false;
                     break;
             }
             return true;
@@ -92,12 +97,6 @@ public class MainActivity extends AppCompatActivity
     {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
-//        // temporary
-//        Intent intent = new Intent(this, CreateRecipeActivity.class);
-//        startActivity(intent);
-//        // ^^^^^^^^^^^^^^^^^^
-
 
         // INIT START
         recipes = new ArrayList<>();
@@ -141,14 +140,28 @@ public class MainActivity extends AppCompatActivity
         if (requestCode == LOGIN_RETURNED && resultCode == Activity.RESULT_OK)
         {
             Handler handler = new Handler();
-            handler.postDelayed(new Runnable()
+            if(goBackToMyRecipes)
             {
-                @Override
-                public void run()
+                handler.postDelayed(new Runnable()
                 {
-                    showAccountFragment();
-                }
-            }, 50);
+                    @Override
+                    public void run()
+                    {
+                        showMyRecipesFragment();
+                    }
+                }, 50);
+            }
+            else
+            {
+                handler.postDelayed(new Runnable()
+                {
+                    @Override
+                    public void run()
+                    {
+                        showAccountFragment();
+                    }
+                }, 50);
+            }
         }
     }
 
