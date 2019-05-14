@@ -134,7 +134,7 @@ public class LoginActivity extends AppCompatActivity
             @Override
             public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable)
             {
-                showError(throwable.getMessage());
+                showError(responseString);
                 deactivateLoadingScreen();
             }
 
